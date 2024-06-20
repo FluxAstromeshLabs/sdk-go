@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	gomath "math"
 	"math/big"
 	"os"
 	"strings"
@@ -34,6 +35,10 @@ var (
 	PoolManagerCompData []byte
 	PoolManagerABI, _   = loadABI(PoolManagerCompData)
 	Six                 = ethcommon.LeftPadBytes([]byte{6}, 32)
+
+	//go:embed erc20.json
+	Erc20Bz     []byte
+	Erc20ABI, _ = loadABI(Erc20Bz)
 )
 
 func loadABI(compDataBz []byte) (abi.ABI, error) {
@@ -156,6 +161,29 @@ func getDenomLink(astromeshClient astromeshtypes.QueryClient, cosmosDenom string
 	return denomLink.DstAddr
 }
 
+func getStateSlot(poolId ethcommon.Hash) ethcommon.Hash {
+	slot0 := crypto.Keccak256Hash(append([]byte(poolId[:]), Six...))
+	return slot0
+}
+
+func getTickSlot(poolId ethcommon.Hash, tick *big.Int) ethcommon.Hash {
+	stateSlot := getStateSlot(poolId)
+	four := math.NewInt(4)
+	mapOffsetInt := math.NewIntFromBigInt(new(big.Int).SetBytes(stateSlot[:])).Add(four)
+	tickMappingSlot := ethcommon.LeftPadBytes(mapOffsetInt.BigInt().Bytes(), 32)
+
+	tickBz := ethcommon.LeftPadBytes(tick.Bytes(), 32)
+	mapElementSlot := crypto.Keccak256Hash(append(tickBz, tickMappingSlot...))
+	fmt.Println("Map element slot key:", mapElementSlot.String())
+	return mapElementSlot
+}
+
+func getLiquiditySlot(poolId ethcommon.Hash) ethcommon.Hash {
+	stateSlot := getStateSlot(poolId)
+	liquiditySlot := math.NewIntFromBigInt(new(big.Int).SetBytes(stateSlot[:])).Add(math.NewInt(3)) // pad it by 3
+	return ethcommon.BytesToHash(ethcommon.LeftPadBytes(liquiditySlot.BigInt().Bytes(), 32))
+}
+
 func main() {
 	network := common.LoadNetwork("local", "")
 	kr, err := keyring.New(
@@ -267,7 +295,7 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("output:", res.Output)
+	fmt.Println("pool output:", res.Output)
 	poolInfo, err := parsePoolinfo(res.Output)
 	if err != nil {
 		panic(err)
@@ -275,4 +303,134 @@ func main() {
 
 	bz, _ := json.Marshal(poolInfo)
 	fmt.Println("poolInfo:", string(bz))
+
+	btcPrice := 69000
+	upperPrice := float64(btcPrice) * 1.2
+	lowerPrice := float64(btcPrice) * 0.8
+	upperTick := computeTick(upperPrice, 60)
+	lowerTick := computeTick(lowerPrice, 60)
+	fmt.Println("lower tick:", lowerTick.String(), "upper tick:", upperTick.String())
+
+	tickSlot := getTickSlot(poolId, poolInfo.Tick.BigInt())
+	tickSlotCd, err := PoolManagerABI.Pack("extsload", tickSlot)
+	if err != nil {
+		panic(err)
+	}
+
+	res, err = evmQc.ContractQuery(ctx, &evmtypes.ContractQueryRequest{
+		Calldata: tickSlotCd,
+		Address:  PoolManager,
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("tick info output:", res.Output)
+	// fmt.Println("tick output:", res.Output)
+	// expected slot: 0x10dc5783f1a6a83fffa4decb918a065355e47495544998fde60a37f7f59ec1a3
+	liquiditySlot := getLiquiditySlot(poolId)
+	liquiditySlotCd, err := PoolManagerABI.Pack("extsload", liquiditySlot)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("lq:", liquiditySlot)
+	res, err = evmQc.ContractQuery(ctx, &evmtypes.ContractQueryRequest{
+		Calldata: liquiditySlotCd,
+		Address:  PoolManager,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("liquidity output:", res.Output)
+	liquidity := math.NewIntFromBigInt(new(big.Int).SetBytes(res.Output))
+	fmt.Println("liquidity number:", liquidity.String())
+
+	poolBalanceCd, err := Erc20ABI.Pack("balanceOf", ethcommon.HexToAddress(PoolManager))
+	if err != nil {
+		panic(err)
+	}
+	res, err = evmQc.ContractQuery(ctx, &evmtypes.ContractQueryRequest{
+		Calldata: poolBalanceCd,
+		Address:  btcEvm,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	balance, err := Erc20ABI.Unpack("balanceOf", res.Output)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("btc balance in contract:", balance[0])
+
+	poolBalanceCd, err = Erc20ABI.Pack("balanceOf", ethcommon.HexToAddress(PoolManager))
+	if err != nil {
+		panic(err)
+	}
+	res, err = evmQc.ContractQuery(ctx, &evmtypes.ContractQueryRequest{
+		Calldata: poolBalanceCd,
+		Address:  usdtEvm,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	balance, err = Erc20ABI.Unpack("balanceOf", res.Output)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("usdt balance in contract:", balance[0])
+	// denom 0 = liquidity * (1/sqrt(lowerTick) - 1/sqrt(currentPrice))
+	// denom 1 = liquidity * (sqrt(upperTick) - sqrt(currentPrice))
+	// denom0 := liquidity.Mul(math.NewIntFromBigInt())
 }
+
+func computeSqrtPriceX96Int(p float64) *big.Int {
+	sqrtPrice := new(big.Float).Sqrt(big.NewFloat(p))
+	factor := new(big.Float).SetInt(new(big.Int).Lsh(big.NewInt(1), 96))
+	sqrtPrice.Mul(sqrtPrice, factor)
+	sqrtPriceX96Int := new(big.Int)
+	price, _ := sqrtPrice.Int(sqrtPriceX96Int)
+	return price
+}
+
+func logBigFloat(x *big.Float) *big.Float {
+	f64, _ := x.Float64()
+	return big.NewFloat(gomath.Log(f64))
+}
+
+func computeTick(price float64, spacing int64) *big.Int {
+	factor := big.NewFloat(1.0001)
+	priceBig := big.NewFloat(price)
+	logPrice := logBigFloat(priceBig)
+	logFactor := logBigFloat(factor)
+	floatTick := new(big.Float).Quo(logPrice, logFactor)
+	spc := big.NewInt(spacing)
+
+	// round tick to closest spacing
+	intTick := new(big.Int)
+	floatTick.Int(intTick)
+	roundedTick := new(big.Int).Mul(new(big.Int).Quo(intTick, spc), spc)
+	return roundedTick
+}
+
+// from contract
+// lower: 18565475724807095937255980671044
+// upper: 22766576394583767738309774305245
+// liquidity = 1000000000
+// current: 20784319660459464383123105852754
+// denom0: 326915
+// denom1: 28349262954
+
+// calculation
+// lower = 18565475724807095937255980671044
+// upper = 22766576394583767738309774305245
+// current = 20811535737222300946999034249216
+// l = 1000000000
+// 326914
+// 28349262953
+// denom1 = l * (current - lower) * 2**96 // (current * lower)
+// denom0 = l * (upper-current) * 2**96 // (upper * current)

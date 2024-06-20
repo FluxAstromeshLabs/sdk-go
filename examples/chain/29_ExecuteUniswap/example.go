@@ -223,6 +223,10 @@ func main() {
 			continue
 		}
 
+		if denom != "btc" {
+			continue
+		}
+
 		// uniswap make sure only a single pair of 2 addresses can exist by comparing token addresses
 		usdtAddr := tokenContracts["usdt"]
 		currencies := []string{usdtAddr, contractAddr}
@@ -244,12 +248,17 @@ func main() {
 		pairKey := &PairKey{
 			Currency0:   ethcommon.HexToAddress(currencies[0]),
 			Currency1:   ethcommon.HexToAddress(currencies[1]),
-			Fee:         big.NewInt(3000),
+			Fee:         big.NewInt(0),
 			TickSpacing: big.NewInt(tickSpacing),
 			Hooks:       ethcommon.HexToAddress("0x"),
 		}
 
 		sqrtPriceX96Int := computeSqrtPriceX96Int(price)
+		xPow96 := new(big.Int).Exp(big.NewInt(2), big.NewInt(96), nil)
+		bigD := new(big.Float).SetInt(sqrtPriceX96Int)
+		sqrtPriceFloat := bigD.Quo(bigD, new(big.Float).SetInt(xPow96))
+		fmt.Println("sqrt price float:", sqrtPriceFloat)
+
 		calldata, err := poolManagerABI.Pack("initialize", pairKey, sqrtPriceX96Int, []byte{})
 		if err != nil {
 			panic(err)
@@ -303,29 +312,6 @@ func main() {
 		}
 		fmt.Println(fmt.Sprintf("liquidity added: %s", res.TxResponse.TxHash))
 
-		// perform swap on pool
-		swapParams := &SwapParams{
-			ZeroForOne:        true,
-			AmountSpecified:   big.NewInt(-5000),
-			SqrtPriceLimitX96: computeSqrtPriceX96Int(lowerPrice),
-		}
-
-		calldata, err = poolActionsABI.Pack("actionSwap", pairKey, swapParams, []byte{})
-		if err != nil {
-			panic(err)
-		}
-
-		msg = &evmtypes.MsgExecuteContract{
-			Sender:          senderAddress.String(),
-			ContractAddress: PoolActionsContractAddr,
-			Calldata:        calldata,
-		}
-		res, err = chainClient.SyncBroadcastMsg(msg)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println("swapped:", res.TxResponse.TxHash)
-
 		hexResp, err := hex.DecodeString(res.TxResponse.Data)
 		if err != nil {
 			panic(fmt.Errorf("decode response hex err: %w", err))
@@ -348,14 +334,61 @@ func main() {
 
 		deltaCurrency0, deltaCurrency1 := r.Output[:16], r.Output[16:32]
 		deltaCurrency0Int, deltaCurrency1Int := new(big.Int).Abs(signedBigIntFromBytes(deltaCurrency0)), new(big.Int).Abs(signedBigIntFromBytes(deltaCurrency1))
-		// swap amount for correct display if we swap 1 => 0
-		if !swapParams.ZeroForOne {
-			deltaCurrency0Int, deltaCurrency1Int = deltaCurrency1Int, deltaCurrency0Int
+		fmt.Println("delta 0, delta 1:", deltaCurrency0Int.String(), deltaCurrency1Int.String())
+
+		// perform swap on pool
+		swapParams := &SwapParams{
+			ZeroForOne:        true,
+			AmountSpecified:   big.NewInt(-5000),
+			SqrtPriceLimitX96: computeSqrtPriceX96Int(lowerPrice),
 		}
 
-		fmt.Println("swapped", deltaCurrency0Int.String(), denom0, "for", deltaCurrency1Int.String(), denom1)
-	}
+		calldata, err = poolActionsABI.Pack("actionSwap", pairKey, swapParams, []byte{})
+		if err != nil {
+			panic(err)
+		}
 
+		fmt.Println("action swap calldata:", hex.EncodeToString(calldata))
+		msg = &evmtypes.MsgExecuteContract{
+			Sender:          senderAddress.String(),
+			ContractAddress: PoolActionsContractAddr,
+			Calldata:        calldata,
+		}
+		res, err = chainClient.SyncBroadcastMsg(msg)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("swapped:", res.TxResponse.TxHash)
+
+		hexResp, err = hex.DecodeString(res.TxResponse.Data)
+		if err != nil {
+			panic(fmt.Errorf("decode response hex err: %w", err))
+		}
+
+		var txData2 sdk.TxMsgData
+		if err := txData2.Unmarshal(hexResp); err != nil {
+			panic(err)
+		}
+
+		var swapR evmtypes.MsgExecuteContractResponse
+		if err := swapR.Unmarshal(txData2.MsgResponses[0].Value); err != nil {
+			panic(fmt.Errorf("unmarshal evm execute contract err: %w", err))
+		}
+
+		// we know for sure it will return an int256
+		if len(swapR.Output) < 32 {
+			panic(fmt.Errorf("swap output must have 32 bytes: %v", swapR.Output))
+		}
+
+		deltaCurrency0A, deltaCurrency1A := swapR.Output[:16], swapR.Output[16:32]
+		deltaCurrency0IntA, deltaCurrency1IntA := new(big.Int).Abs(signedBigIntFromBytes(deltaCurrency0A)), new(big.Int).Abs(signedBigIntFromBytes(deltaCurrency1A))
+		// swap amount for correct display if we swap 1 => 0
+		if !swapParams.ZeroForOne {
+			deltaCurrency0IntA, deltaCurrency1IntA = deltaCurrency1IntA, deltaCurrency0IntA
+		}
+
+		fmt.Println("swapped", deltaCurrency0IntA.String(), denom0, "for", deltaCurrency1IntA.String(), denom1)
+	}
 }
 
 func computeSqrtPriceX96Int(p float64) *big.Int {
@@ -372,6 +405,7 @@ func logBigFloat(x *big.Float) *big.Float {
 	return big.NewFloat(math.Log(f64))
 }
 
+// 1.0001^tick = P <=> tick * log(1.0001) = log(P) <=> tick = log(P)/log(1.0001)
 func computeTick(price float64, spacing int64) *big.Int {
 	factor := big.NewFloat(1.0001)
 	priceBig := big.NewFloat(price)
