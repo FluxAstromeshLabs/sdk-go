@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
+	"strings"
+
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gogoproto/proto"
 	ethcommon "github.com/ethereum/go-ethereum/common"
-	"os"
-	"strings"
 
 	chaintypes "github.com/FluxNFTLabs/sdk-go/chain/types"
 	"github.com/FluxNFTLabs/sdk-go/client/common"
@@ -141,7 +142,7 @@ func main() {
 				"pair_type": {
 				  "xyk": {}
 				},
-				"total_fee_bps": 100,
+				"total_fee_bps": 100, / 10^4
 				"maker_fee_bps": 10,
 				"is_disabled": false
 			  }

@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 
+	_ "embed"
+
 	"github.com/FluxNFTLabs/sdk-go/chain/modules/svm/types"
 	chaintypes "github.com/FluxNFTLabs/sdk-go/chain/types"
 	chainclient "github.com/FluxNFTLabs/sdk-go/client/chain"
@@ -20,6 +22,11 @@ import (
 )
 
 const MaxComputeBudget = 10000000
+
+var (
+	//go:embed raydium_cp_swap.so
+	programBz []byte
+)
 
 func BuildInitAccountsMsg(
 	senderAddr sdk.AccAddress,
@@ -211,11 +218,6 @@ func main() {
 		clientCtx,
 		common.OptionGasPrices("500000000lux"),
 	)
-	if err != nil {
-		panic(err)
-	}
-
-	programBz, err := os.ReadFile("examples/chain/30_DeployRaydium/raydium_cp_swap.so")
 	if err != nil {
 		panic(err)
 	}

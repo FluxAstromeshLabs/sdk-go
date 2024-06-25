@@ -296,6 +296,7 @@ func main() {
 	}
 
 	fmt.Println("pool output:", res.Output)
+	fmt.Println("pool info hex:", hex.EncodeToString(res.Output))
 	poolInfo, err := parsePoolinfo(res.Output)
 	if err != nil {
 		panic(err)
