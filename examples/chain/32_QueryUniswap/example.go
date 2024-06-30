@@ -214,15 +214,6 @@ func main() {
 	}
 	clientCtx = clientCtx.WithGRPCClient(cc)
 
-	// // init chain client
-	// chainClient, err := chainclient.NewChainClient(
-	// 	clientCtx,
-	// 	common.OptionGasPrices("500000000lux"),
-	// )
-	// if err != nil {
-	// 	panic(err)
-	// }
-
 	// read bytecode
 	dir, err := os.Getwd()
 	if err != nil {
@@ -264,9 +255,10 @@ func main() {
 	usdtEvm := getDenomLink(astroQc, "usdt")
 	denom0, denom1 := btcEvm, usdtEvm
 	if denom0 > denom1 {
-		denom1, denom0 = denom0, denom1
+		denom0, denom1 = denom1, denom0
 	}
 
+	fmt.Println("denom0, 1:", denom0, denom1)
 	p := &PairKey{
 		Currency0:   ethcommon.HexToAddress(denom0),
 		Currency1:   ethcommon.HexToAddress(denom1),
@@ -276,7 +268,6 @@ func main() {
 	}
 
 	fmt.Println("poolId:", p.PoolId())
-
 	ctx := context.Background()
 	poolId := p.PoolId()
 	slot0 := crypto.Keccak256Hash(append([]byte(poolId[:]), Six...))
@@ -312,7 +303,8 @@ func main() {
 	lowerTick := computeTick(lowerPrice, 60)
 	fmt.Println("lower tick:", lowerTick.String(), "upper tick:", upperTick.String())
 
-	tickSlot := getTickSlot(poolId, poolInfo.Tick.BigInt())
+	// swap btc => usdt
+	tickSlot := getTickSlot(poolId, lowerTick)
 	tickSlotCd, err := PoolManagerABI.Pack("extsload", tickSlot)
 	if err != nil {
 		panic(err)
@@ -433,5 +425,5 @@ func computeTick(price float64, spacing int64) *big.Int {
 // l = 1000000000
 // 326914
 // 28349262953
-// denom1 = l * (current - lower) * 2**96 // (current * lower)
-// denom0 = l * (upper-current) * 2**96 // (upper * current)
+// denom0 = l * (upper-current) * 2**96 // (upper*current)
+// denom1 = l * (current - lower)

@@ -248,7 +248,7 @@ func main() {
 		pairKey := &PairKey{
 			Currency0:   ethcommon.HexToAddress(currencies[0]),
 			Currency1:   ethcommon.HexToAddress(currencies[1]),
-			Fee:         big.NewInt(0),
+			Fee:         big.NewInt(3000),
 			TickSpacing: big.NewInt(tickSpacing),
 			Hooks:       ethcommon.HexToAddress("0x"),
 		}
@@ -291,6 +291,7 @@ func main() {
 		// provide liquidity in +-20% range
 		lowerPrice := float64(price) * 0.8
 		upperPrice := float64(price) * 1.2
+		fmt.Println("price:", price, lowerPrice, upperPrice)
 		modifyLiquidityParams := &ModifyLiquidityParams{
 			TickLower:      computeTick(lowerPrice, tickSpacing),
 			TickUpper:      computeTick(upperPrice, tickSpacing),
@@ -336,6 +337,7 @@ func main() {
 		deltaCurrency0Int, deltaCurrency1Int := new(big.Int).Abs(signedBigIntFromBytes(deltaCurrency0)), new(big.Int).Abs(signedBigIntFromBytes(deltaCurrency1))
 		fmt.Println("delta 0, delta 1:", deltaCurrency0Int.String(), deltaCurrency1Int.String())
 
+		break
 		// perform swap on pool
 		swapParams := &SwapParams{
 			ZeroForOne:        true,
@@ -420,3 +422,10 @@ func computeTick(price float64, spacing int64) *big.Int {
 	roundedTick := new(big.Int).Mul(new(big.Int).Quo(intTick, spc), spc)
 	return roundedTick
 }
+
+/*
+btc balance in contract: 326915
+usdt balance in contract: 28349262954
+427.056.067
+343.515.183
+*/

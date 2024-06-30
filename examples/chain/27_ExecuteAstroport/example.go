@@ -3,10 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"math/big"
 	"os"
 	"strings"
+
+	"cosmossdk.io/math"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	chaintypes "github.com/FluxNFTLabs/sdk-go/chain/types"
 	"github.com/FluxNFTLabs/sdk-go/client/common"
@@ -79,9 +82,26 @@ func main() {
 		"lux1aakfpghcanxtc45gpqlx8j3rq0zcpyf49qmhm9mdjrfx036h4z5sdltq0m": "eth/usdt",
 		"lux18v47nqmhvejx3vc498pantg8vr435xa0rt6x0m6kzhp6yuqmcp8s3z45es": "sol/usdt",
 	}
+
+	prices := map[string]int64{
+		"btc": 64000,
+		"eth": 4000,
+		"sol": 170,
+	}
+
+	decimals := map[string]int64{
+		"btc": 8,
+		"eth": 18,
+		"sol": 9,
+	}
+
 	for contractAddr, ticker := range pairs {
 		denoms := strings.Split(ticker, "/")
-		amount := int64(10000)
+
+		price := math.NewInt(prices[denoms[0]])
+		denomAmount := math.NewInt(10).Mul(math.NewIntFromBigInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(decimals[denoms[0]]), nil)))
+		usdtAmount := math.NewInt(10).Mul(price).Mul(math.NewInt(1000_000))
+
 		res, err := chainClient.SyncBroadcastMsg(&wasmtypes.MsgExecuteContract{
 			Sender:   senderAddress.String(),
 			Contract: contractAddr,
@@ -94,7 +114,7 @@ func main() {
 						  "denom": "%s"
 						}
 					  },
-					  "amount": "%d"
+					  "amount": "%s"
 					},
 					{
 					  "info": {
@@ -102,16 +122,16 @@ func main() {
 						  "denom": "%s"
 						}
 					  },
-					  "amount": "%d"
+					  "amount": "%s"
 					}
 				  ],
 				  "auto_stake": false,
 				  "receiver": "%s"
 				}
-			  }`, denoms[0], amount, denoms[1], amount, senderAddress.String())),
+			  }`, denoms[0], denomAmount.String(), denoms[1], usdtAmount.String(), senderAddress.String())),
 			Funds: sdk.Coins{
-				sdk.NewInt64Coin(denoms[0], amount),
-				sdk.NewInt64Coin(denoms[1], amount),
+				sdk.NewCoin(denoms[0], denomAmount),
+				sdk.NewCoin(denoms[1], usdtAmount),
 			},
 		})
 		if err != nil {
@@ -122,6 +142,7 @@ func main() {
 
 	// swap token
 	for contractAddr, ticker := range pairs {
+		break
 		denoms := strings.Split(ticker, "/")
 		amount := int64(5)
 		res, err := chainClient.SyncBroadcastMsg(&wasmtypes.MsgExecuteContract{

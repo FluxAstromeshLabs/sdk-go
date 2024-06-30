@@ -70,8 +70,8 @@ func main() {
 		Strategy: botBinary,
 		Query:    &types.FISQueryRequest{},
 		Metadata: &strategytypes.StrategyMetadata{
-			Name:        "Astromesh arbitrage bot",
-			Description: "Arbitrage",
+			Name:        "Amm swap wizard",
+			Description: "Abstracting out swaps and unleashing arbitrage opportunities. It supports basic swaps as well as arbitrage across pools of the same pair",
 			Logo:        "https://media.licdn.com/dms/image/D560BAQG83Lxt5OyW4Q/company-logo_200_200/0/1706516333778?e=1724889600&v=beta&t=_fD4VtBEpNKJ8gESgFOcZyTDrQFlRUfxw1iQD8mItnM",
 			Website:     "https://www.astromesh.xyz",
 			Type:        strategytypes.StrategyType_INTENT_SOLVER,

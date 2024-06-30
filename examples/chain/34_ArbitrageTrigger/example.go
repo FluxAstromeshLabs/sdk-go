@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
 	"os"
 	"strings"
@@ -63,15 +62,10 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("address:", senderAddress.String())
-	// usdt: 4oFvCXEirbLCqK3i4aBmrgmt18Hf7KwBdjjfpUpEUMkA
-	// btc: AarDASauqWwFsuG9r62pYCH3m9CFtvvQucUs2iLg18AW
 	senderSvm := solana.PublicKeyFromBytes(ethcrypto.Keccak256(senderAddress.Bytes()))
-	b58 := solana.MustPublicKeyFromBase58("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb")
-	fmt.Println("base64:", base64.StdEncoding.EncodeToString(b58[:]))
 	msg := &strategytypes.MsgTriggerStrategies{
 		Sender: senderAddress.String(),
-		Ids:    []string{"3b0d5f7cc724ba7e583bdcd0d8ce997d2ebf7013ca5ba692b73664ee5bf624ea"},
+		Ids:    []string{"f7534ee745ff600d5af41c7e67013f17f78a040ccb48d17b4b39d37238af866f"},
 		Inputs: [][]byte{
 			[]byte(fmt.Sprintf(`[
 				{
@@ -80,7 +74,7 @@ func main() {
 					"input_denom": "usdt",
 					"output_denom": "btc",
 					"denom_plane": "COSMOS",
-					"input_amount": "100000000"
+					"input_amount": "10000000"
 				}, 
 				{
 					"dex_name": "raydium",
