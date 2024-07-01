@@ -223,10 +223,6 @@ func main() {
 			continue
 		}
 
-		if denom != "btc" {
-			continue
-		}
-
 		// uniswap make sure only a single pair of 2 addresses can exist by comparing token addresses
 		usdtAddr := tokenContracts["usdt"]
 		currencies := []string{usdtAddr, contractAddr}
@@ -337,7 +333,6 @@ func main() {
 		deltaCurrency0Int, deltaCurrency1Int := new(big.Int).Abs(signedBigIntFromBytes(deltaCurrency0)), new(big.Int).Abs(signedBigIntFromBytes(deltaCurrency1))
 		fmt.Println("delta 0, delta 1:", deltaCurrency0Int.String(), deltaCurrency1Int.String())
 
-		break
 		// perform swap on pool
 		swapParams := &SwapParams{
 			ZeroForOne:        true,

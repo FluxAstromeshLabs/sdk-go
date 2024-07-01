@@ -137,14 +137,13 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(fmt.Sprintf("provided liquidity for pool %s: %s", ticker, res.TxResponse.TxHash))
+		fmt.Printf("provided liquidity for pool %s: %s\n", ticker, res.TxResponse.TxHash)
 	}
 
 	// swap token
 	for contractAddr, ticker := range pairs {
-		break
 		denoms := strings.Split(ticker, "/")
-		amount := int64(5)
+		amount := int64(500000)
 		res, err := chainClient.SyncBroadcastMsg(&wasmtypes.MsgExecuteContract{
 			Sender:   senderAddress.String(),
 			Contract: contractAddr,

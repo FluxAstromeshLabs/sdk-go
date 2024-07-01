@@ -21,7 +21,7 @@ import (
 )
 
 var (
-	//go:embed arbitrage_demo.wasm
+	//go:embed amm_solver.wasm
 	botBinary []byte
 )
 
