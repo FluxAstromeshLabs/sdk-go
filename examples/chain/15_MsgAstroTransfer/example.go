@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
-	"cosmossdk.io/math"
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"os"
 	"strings"
+
+	"cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	astromeshtypes "github.com/FluxNFTLabs/sdk-go/chain/modules/astromesh/types"
 	chaintypes "github.com/FluxNFTLabs/sdk-go/chain/types"
@@ -63,9 +64,9 @@ func main() {
 	// prepare tx msg
 	msg1 := &astromeshtypes.MsgAstroTransfer{
 		Sender:   senderAddress.String(),
-		Receiver: senderAddress.String(),
+		Receiver: "lux158ucxjzr6ccrlpmz8z05wylu8tr5eueqcp2afu",
 		SrcPlane: astromeshtypes.Plane_COSMOS,
-		DstPlane: astromeshtypes.Plane_EVM,
+		DstPlane: astromeshtypes.Plane_COSMOS,
 		Coin: sdk.Coin{
 			Denom:  "lux",
 			Amount: math.NewIntFromUint64(100),
@@ -78,6 +79,7 @@ func main() {
 	fmt.Println("resp:", txResp.TxResponse.TxHash)
 	fmt.Println("gas used/want:", txResp.TxResponse.GasUsed, "/", txResp.TxResponse.GasWanted)
 
+	return
 	denomLink, err := astromeshClient.DenomLink(context.Background(), &astromeshtypes.QueryDenomLinkRequest{
 		SrcPlane: astromeshtypes.Plane_COSMOS,
 		DstPlane: astromeshtypes.Plane_EVM,
