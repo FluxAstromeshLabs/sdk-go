@@ -5,6 +5,7 @@ package types
 
 import (
 	fmt "fmt"
+	types "github.com/FluxNFTLabs/sdk-go/chain/eventstream/types"
 	proto "github.com/cosmos/gogoproto/proto"
 	io "io"
 	math "math"
@@ -22,23 +23,24 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type EventExecute struct {
-	Error string   `protobuf:"bytes,1,opt,name=error,proto3" json:"error,omitempty"`
-	Logs  []string `protobuf:"bytes,2,rep,name=logs,proto3" json:"logs,omitempty"`
+type ExecuteEvent struct {
+	Op    types.Op `protobuf:"varint,1,opt,name=op,proto3,enum=flux.eventstream.v1beta1.Op" json:"op,omitempty"`
+	Error string   `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	Logs  []string `protobuf:"bytes,3,rep,name=logs,proto3" json:"logs,omitempty"`
 }
 
-func (m *EventExecute) Reset()         { *m = EventExecute{} }
-func (m *EventExecute) String() string { return proto.CompactTextString(m) }
-func (*EventExecute) ProtoMessage()    {}
-func (*EventExecute) Descriptor() ([]byte, []int) {
+func (m *ExecuteEvent) Reset()         { *m = ExecuteEvent{} }
+func (m *ExecuteEvent) String() string { return proto.CompactTextString(m) }
+func (*ExecuteEvent) ProtoMessage()    {}
+func (*ExecuteEvent) Descriptor() ([]byte, []int) {
 	return fileDescriptor_acc1608d1027520d, []int{0}
 }
-func (m *EventExecute) XXX_Unmarshal(b []byte) error {
+func (m *ExecuteEvent) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventExecute) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *ExecuteEvent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventExecute.Marshal(b, m, deterministic)
+		return xxx_messageInfo_ExecuteEvent.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -48,48 +50,56 @@ func (m *EventExecute) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 		return b[:n], nil
 	}
 }
-func (m *EventExecute) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventExecute.Merge(m, src)
+func (m *ExecuteEvent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ExecuteEvent.Merge(m, src)
 }
-func (m *EventExecute) XXX_Size() int {
+func (m *ExecuteEvent) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventExecute) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventExecute.DiscardUnknown(m)
+func (m *ExecuteEvent) XXX_DiscardUnknown() {
+	xxx_messageInfo_ExecuteEvent.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventExecute proto.InternalMessageInfo
+var xxx_messageInfo_ExecuteEvent proto.InternalMessageInfo
 
-func (m *EventExecute) GetError() string {
+func (m *ExecuteEvent) GetOp() types.Op {
+	if m != nil {
+		return m.Op
+	}
+	return types.Op_COSMOS_SET
+}
+
+func (m *ExecuteEvent) GetError() string {
 	if m != nil {
 		return m.Error
 	}
 	return ""
 }
 
-func (m *EventExecute) GetLogs() []string {
+func (m *ExecuteEvent) GetLogs() []string {
 	if m != nil {
 		return m.Logs
 	}
 	return nil
 }
 
-type EventAccUpdate struct {
-	Accs [][]byte `protobuf:"bytes,1,rep,name=accs,proto3" json:"accs,omitempty"`
+type AccUpdateEvent struct {
+	Op   types.Op `protobuf:"varint,1,opt,name=op,proto3,enum=flux.eventstream.v1beta1.Op" json:"op,omitempty"`
+	Accs [][]byte `protobuf:"bytes,2,rep,name=accs,proto3" json:"accs,omitempty"`
 }
 
-func (m *EventAccUpdate) Reset()         { *m = EventAccUpdate{} }
-func (m *EventAccUpdate) String() string { return proto.CompactTextString(m) }
-func (*EventAccUpdate) ProtoMessage()    {}
-func (*EventAccUpdate) Descriptor() ([]byte, []int) {
+func (m *AccUpdateEvent) Reset()         { *m = AccUpdateEvent{} }
+func (m *AccUpdateEvent) String() string { return proto.CompactTextString(m) }
+func (*AccUpdateEvent) ProtoMessage()    {}
+func (*AccUpdateEvent) Descriptor() ([]byte, []int) {
 	return fileDescriptor_acc1608d1027520d, []int{1}
 }
-func (m *EventAccUpdate) XXX_Unmarshal(b []byte) error {
+func (m *AccUpdateEvent) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventAccUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AccUpdateEvent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventAccUpdate.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AccUpdateEvent.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -99,19 +109,26 @@ func (m *EventAccUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
-func (m *EventAccUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventAccUpdate.Merge(m, src)
+func (m *AccUpdateEvent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AccUpdateEvent.Merge(m, src)
 }
-func (m *EventAccUpdate) XXX_Size() int {
+func (m *AccUpdateEvent) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventAccUpdate) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventAccUpdate.DiscardUnknown(m)
+func (m *AccUpdateEvent) XXX_DiscardUnknown() {
+	xxx_messageInfo_AccUpdateEvent.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventAccUpdate proto.InternalMessageInfo
+var xxx_messageInfo_AccUpdateEvent proto.InternalMessageInfo
 
-func (m *EventAccUpdate) GetAccs() [][]byte {
+func (m *AccUpdateEvent) GetOp() types.Op {
+	if m != nil {
+		return m.Op
+	}
+	return types.Op_COSMOS_SET
+}
+
+func (m *AccUpdateEvent) GetAccs() [][]byte {
 	if m != nil {
 		return m.Accs
 	}
@@ -119,32 +136,35 @@ func (m *EventAccUpdate) GetAccs() [][]byte {
 }
 
 func init() {
-	proto.RegisterType((*EventExecute)(nil), "flux.svm.v1beta1.EventExecute")
-	proto.RegisterType((*EventAccUpdate)(nil), "flux.svm.v1beta1.EventAccUpdate")
+	proto.RegisterType((*ExecuteEvent)(nil), "flux.svm.v1beta1.ExecuteEvent")
+	proto.RegisterType((*AccUpdateEvent)(nil), "flux.svm.v1beta1.AccUpdateEvent")
 }
 
 func init() { proto.RegisterFile("flux/svm/v1beta1/event.proto", fileDescriptor_acc1608d1027520d) }
 
 var fileDescriptor_acc1608d1027520d = []byte{
-	// 225 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x49, 0xcb, 0x29, 0xad,
-	0xd0, 0x2f, 0x2e, 0xcb, 0xd5, 0x2f, 0x33, 0x4c, 0x4a, 0x2d, 0x49, 0x34, 0xd4, 0x4f, 0x2d, 0x4b,
-	0xcd, 0x2b, 0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x00, 0xc9, 0xea, 0x15, 0x97, 0xe5,
-	0xea, 0x41, 0x65, 0x95, 0x2c, 0xb8, 0x78, 0x5c, 0x41, 0x0a, 0x5c, 0x2b, 0x52, 0x93, 0x4b, 0x4b,
-	0x52, 0x85, 0x44, 0xb8, 0x58, 0x53, 0x8b, 0x8a, 0xf2, 0x8b, 0x24, 0x18, 0x15, 0x18, 0x35, 0x38,
-	0x83, 0x20, 0x1c, 0x21, 0x21, 0x2e, 0x96, 0x9c, 0xfc, 0xf4, 0x62, 0x09, 0x26, 0x05, 0x66, 0x0d,
-	0xce, 0x20, 0x30, 0x5b, 0x49, 0x85, 0x8b, 0x0f, 0xac, 0xd3, 0x31, 0x39, 0x39, 0xb4, 0x20, 0x25,
-	0xb1, 0x24, 0x15, 0xa4, 0x2a, 0x31, 0x39, 0xb9, 0x58, 0x82, 0x51, 0x81, 0x59, 0x83, 0x27, 0x08,
-	0xcc, 0x76, 0xf2, 0x3b, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18,
-	0x27, 0x3c, 0x96, 0x63, 0xb8, 0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28, 0x93, 0xf4,
-	0xcc, 0x92, 0x8c, 0xd2, 0x24, 0xbd, 0xe4, 0xfc, 0x5c, 0x7d, 0xb7, 0x9c, 0xd2, 0x0a, 0x3f, 0xb7,
-	0x10, 0x9f, 0xc4, 0xa4, 0x62, 0x7d, 0x90, 0x13, 0x53, 0xf4, 0x93, 0x33, 0x12, 0x33, 0xf3, 0xf4,
-	0x73, 0xf3, 0x53, 0x4a, 0x73, 0x52, 0x8b, 0xc1, 0xfe, 0x29, 0xa9, 0x2c, 0x48, 0x2d, 0x4e, 0x62,
-	0x03, 0x7b, 0xc4, 0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0x29, 0x46, 0x14, 0x44, 0xe8, 0x00, 0x00,
+	// 273 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x90, 0xcd, 0x4a, 0xc3, 0x40,
+	0x1c, 0xc4, 0xb3, 0x49, 0x15, 0xba, 0x94, 0x22, 0x8b, 0x87, 0x20, 0x65, 0x09, 0xc5, 0x43, 0x0e,
+	0xb2, 0x4b, 0xd5, 0x17, 0x50, 0x68, 0x4f, 0x52, 0x21, 0xe8, 0xc5, 0xdb, 0x66, 0xb3, 0xfd, 0x80,
+	0xa4, 0xbb, 0xee, 0x47, 0x48, 0xdf, 0xc2, 0xc7, 0xf2, 0xd8, 0xa3, 0x47, 0x49, 0x5e, 0x44, 0xb2,
+	0x55, 0xf4, 0xec, 0xed, 0xff, 0x67, 0x66, 0x7e, 0x03, 0x03, 0x27, 0xab, 0xd2, 0x35, 0xd4, 0xd4,
+	0x15, 0xad, 0x67, 0xb9, 0xb0, 0x6c, 0x46, 0x45, 0x2d, 0x76, 0x96, 0x28, 0x2d, 0xad, 0x44, 0x67,
+	0xbd, 0x4a, 0x4c, 0x5d, 0x91, 0x6f, 0xf5, 0xe2, 0xd2, 0xfb, 0xbd, 0xc7, 0x58, 0x2d, 0xd8, 0x6f,
+	0xee, 0xd5, 0x09, 0xbd, 0x3f, 0xe6, 0xa6, 0x2b, 0x38, 0x9a, 0x37, 0x82, 0x3b, 0x2b, 0xe6, 0xbd,
+	0x13, 0x5d, 0xc1, 0x50, 0xaa, 0x18, 0x24, 0x20, 0x1d, 0x5f, 0x4f, 0x88, 0x87, 0xfe, 0x41, 0xfc,
+	0xc0, 0xc9, 0xa3, 0xca, 0x42, 0xa9, 0xd0, 0x39, 0x3c, 0x11, 0x5a, 0x4b, 0x1d, 0x87, 0x09, 0x48,
+	0x87, 0xd9, 0xf1, 0x41, 0x08, 0x0e, 0x4a, 0xb9, 0x36, 0x71, 0x94, 0x44, 0xe9, 0x30, 0xf3, 0xf7,
+	0x34, 0x83, 0xe3, 0x3b, 0xce, 0x9f, 0x55, 0xc1, 0xfe, 0xd7, 0x84, 0xe0, 0x80, 0x71, 0x6e, 0xe2,
+	0x30, 0x89, 0xd2, 0x51, 0xe6, 0xef, 0xfb, 0xe5, 0x7b, 0x8b, 0xc1, 0xa1, 0xc5, 0xe0, 0xb3, 0xc5,
+	0xe0, 0xad, 0xc3, 0xc1, 0xa1, 0xc3, 0xc1, 0x47, 0x87, 0x83, 0x97, 0xdb, 0xf5, 0xd6, 0x6e, 0x5c,
+	0x4e, 0xb8, 0xac, 0xe8, 0xa2, 0x74, 0xcd, 0x72, 0xf1, 0xf4, 0xc0, 0x72, 0x43, 0xfb, 0x96, 0x82,
+	0xf2, 0x0d, 0xdb, 0xee, 0x68, 0x25, 0x0b, 0x57, 0x0a, 0xe3, 0x17, 0xb5, 0x7b, 0x25, 0x4c, 0x7e,
+	0xea, 0x27, 0xb9, 0xf9, 0x0a, 0x00, 0x00, 0xff, 0xff, 0xdd, 0xce, 0x24, 0x56, 0x6a, 0x01, 0x00,
 	0x00,
 }
 
-func (m *EventExecute) Marshal() (dAtA []byte, err error) {
+func (m *ExecuteEvent) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -154,12 +174,12 @@ func (m *EventExecute) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventExecute) MarshalTo(dAtA []byte) (int, error) {
+func (m *ExecuteEvent) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventExecute) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ExecuteEvent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -170,7 +190,7 @@ func (m *EventExecute) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			copy(dAtA[i:], m.Logs[iNdEx])
 			i = encodeVarintEvent(dAtA, i, uint64(len(m.Logs[iNdEx])))
 			i--
-			dAtA[i] = 0x12
+			dAtA[i] = 0x1a
 		}
 	}
 	if len(m.Error) > 0 {
@@ -178,12 +198,17 @@ func (m *EventExecute) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.Error)
 		i = encodeVarintEvent(dAtA, i, uint64(len(m.Error)))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x12
+	}
+	if m.Op != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.Op))
+		i--
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *EventAccUpdate) Marshal() (dAtA []byte, err error) {
+func (m *AccUpdateEvent) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -193,12 +218,12 @@ func (m *EventAccUpdate) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventAccUpdate) MarshalTo(dAtA []byte) (int, error) {
+func (m *AccUpdateEvent) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventAccUpdate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AccUpdateEvent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -209,8 +234,13 @@ func (m *EventAccUpdate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			copy(dAtA[i:], m.Accs[iNdEx])
 			i = encodeVarintEvent(dAtA, i, uint64(len(m.Accs[iNdEx])))
 			i--
-			dAtA[i] = 0xa
+			dAtA[i] = 0x12
 		}
+	}
+	if m.Op != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.Op))
+		i--
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -226,12 +256,15 @@ func encodeVarintEvent(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *EventExecute) Size() (n int) {
+func (m *ExecuteEvent) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
+	if m.Op != 0 {
+		n += 1 + sovEvent(uint64(m.Op))
+	}
 	l = len(m.Error)
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
@@ -245,12 +278,15 @@ func (m *EventExecute) Size() (n int) {
 	return n
 }
 
-func (m *EventAccUpdate) Size() (n int) {
+func (m *AccUpdateEvent) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
+	if m.Op != 0 {
+		n += 1 + sovEvent(uint64(m.Op))
+	}
 	if len(m.Accs) > 0 {
 		for _, b := range m.Accs {
 			l = len(b)
@@ -266,7 +302,7 @@ func sovEvent(x uint64) (n int) {
 func sozEvent(x uint64) (n int) {
 	return sovEvent(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *EventExecute) Unmarshal(dAtA []byte) error {
+func (m *ExecuteEvent) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -289,13 +325,32 @@ func (m *EventExecute) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventExecute: wiretype end group for non-group")
+			return fmt.Errorf("proto: ExecuteEvent: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventExecute: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: ExecuteEvent: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Op", wireType)
+			}
+			m.Op = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Op |= types.Op(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Error", wireType)
 			}
@@ -327,7 +382,7 @@ func (m *EventExecute) Unmarshal(dAtA []byte) error {
 			}
 			m.Error = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 2:
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Logs", wireType)
 			}
@@ -380,7 +435,7 @@ func (m *EventExecute) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventAccUpdate) Unmarshal(dAtA []byte) error {
+func (m *AccUpdateEvent) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -403,13 +458,32 @@ func (m *EventAccUpdate) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventAccUpdate: wiretype end group for non-group")
+			return fmt.Errorf("proto: AccUpdateEvent: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventAccUpdate: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AccUpdateEvent: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Op", wireType)
+			}
+			m.Op = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Op |= types.Op(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Accs", wireType)
 			}

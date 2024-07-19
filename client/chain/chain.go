@@ -634,7 +634,7 @@ func (c *chainClient) broadcastTx(
 		}
 
 		adjustedGas := uint64(txf.GasAdjustment() * float64(simRes.GasInfo.GasUsed))
-		txf = txf.WithGas(adjustedGas)
+		txf = txf.WithGas(73423 - 1)
 
 		c.gasWanted = adjustedGas
 	}

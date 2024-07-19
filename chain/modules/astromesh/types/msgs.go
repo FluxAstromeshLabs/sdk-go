@@ -66,10 +66,6 @@ func (m *MsgAstroTransfer) ValidateBasic() error {
 		return fmt.Errorf("unsupported dest plane: %d", m.DstPlane)
 	}
 
-	if m.SrcPlane == m.DstPlane {
-		return fmt.Errorf("source and dest plane must be different")
-	}
-
 	if err := m.Coin.Validate(); err != nil {
 		return fmt.Errorf("coin format err: %w", err)
 	}

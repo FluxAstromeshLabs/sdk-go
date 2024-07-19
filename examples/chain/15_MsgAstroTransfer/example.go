@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
-	"cosmossdk.io/math"
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"os"
 	"strings"
+
+	"cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	astromeshtypes "github.com/FluxNFTLabs/sdk-go/chain/modules/astromesh/types"
 	chaintypes "github.com/FluxNFTLabs/sdk-go/chain/types"
@@ -65,7 +66,7 @@ func main() {
 		Sender:   senderAddress.String(),
 		Receiver: senderAddress.String(),
 		SrcPlane: astromeshtypes.Plane_COSMOS,
-		DstPlane: astromeshtypes.Plane_EVM,
+		DstPlane: astromeshtypes.Plane_WASM,
 		Coin: sdk.Coin{
 			Denom:  "lux",
 			Amount: math.NewIntFromUint64(100),

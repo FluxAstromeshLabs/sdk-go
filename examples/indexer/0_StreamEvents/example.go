@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
+
 	"github.com/FluxNFTLabs/sdk-go/client/common"
 	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/goccy/go-json"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/FluxNFTLabs/sdk-go/chain/stream/types"
+	"github.com/FluxNFTLabs/sdk-go/chain/eventstream/types"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 	client := types.NewQueryClient(cc)
 
 	stream, err := client.StreamEvents(context.Background(), &types.EventsRequest{
-		Modules:   []string{"fnft"},
+		Modules:   []string{"bank", "astromesh", "wasm", "evm"},
 		TmQueries: []string{"block", "block_results", "validators"},
 	})
 	if err != nil {
