@@ -911,7 +911,7 @@ func (c *chainClient) SyncBroadcastSvmMsg(msg *svmtypes.MsgTransaction) (*txtype
 
 func (c *chainClient) GetSVMAccountLink(ctx context.Context, cosmosAddress sdk.AccAddress) (isLinked bool, pubkey solana.PublicKey, err error) {
 	resp, err := c.svmQueryClient.CosmosAccountLink(context.Background(), &svmtypes.CosmosAccountLinkRequest{
-		Address: c.FromAddress().String(),
+		Address: cosmosAddress.String(),
 	})
 
 	if err != nil {
