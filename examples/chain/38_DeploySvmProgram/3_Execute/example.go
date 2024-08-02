@@ -276,4 +276,11 @@ func main() {
 
 	fmt.Println("tx hash:", res.TxResponse.TxHash)
 	fmt.Println("gas used/want:", res.TxResponse.GasUsed, "/", res.TxResponse.GasWanted)
+
+	acc, err := chainClient.GetSvmAccount(context.Background(), programDataSvmPubKey.String())
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("✅ account", programDataSvmPubKey.String(), "data:", acc.Account.Data)
 }

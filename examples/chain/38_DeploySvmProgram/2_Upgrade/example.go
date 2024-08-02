@@ -431,7 +431,7 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("tx hash:", res.TxResponse.TxHash)
+	fmt.Println("✅ program upgraded. tx hash:", res.TxResponse.TxHash)
 	fmt.Println("gas used/want:", res.TxResponse.GasUsed, "/", res.TxResponse.GasWanted)
 	fmt.Println("program", programPubkey.String(), "is upgraded successfully")
 	programExecutablePubkey, _, err := solana.FindProgramAddress([][]byte{programPubkey[:]}, solana.BPFLoaderUpgradeableProgramID)

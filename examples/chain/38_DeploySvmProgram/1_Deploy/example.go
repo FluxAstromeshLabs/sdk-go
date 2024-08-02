@@ -439,7 +439,7 @@ func main() {
 	fmt.Println("tx hash:", res.TxResponse.TxHash)
 	fmt.Println("gas used/want:", res.TxResponse.GasUsed, "/", res.TxResponse.GasWanted)
 
-	fmt.Println("deploy program")
+	fmt.Println("deploying program")
 	signedTx, err = BuildSignedTx(chainClient, []sdk.Msg{deployMsg}, cosmosPrivateKeys)
 	if err != nil {
 		panic(err)
@@ -455,7 +455,7 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("tx hash:", res.TxResponse.TxHash)
+	fmt.Println("✅ program deployed. tx hash:", res.TxResponse.TxHash)
 	fmt.Println("gas used/want:", res.TxResponse.GasUsed, "/", res.TxResponse.GasWanted)
 	fmt.Println("program pubkey:", programPubkey.String())
 	programExecutablePubkey, _, err := solana.FindProgramAddress([][]byte{programPubkey[:]}, solana.BPFLoaderUpgradeableProgramID)
