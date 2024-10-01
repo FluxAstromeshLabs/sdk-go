@@ -14,13 +14,18 @@ import (
 	"github.com/cosmos/btcutil/base58"
 )
 
+var (
+	epochStartTs            = int64(0)
+	DEFAULT_SLOTS_PER_EPOCH = uint64(128)
+)
+
 type ComputeBudget struct {
 	computeBudget *C.golana_compute_budget
 }
 
-func NewComputeBudget(computeUnitLimit uint64, maxInstructionTraceLength uint64, maxInvokeStackHeight uint64) ComputeBudget {
+func NewComputeBudget(computeUnitLimit uint64, maxInstructionTraceLength uint64, maxInvokeStackHeight uint64, maxStackFrameSize uint64, maxHeapSize uint32) ComputeBudget {
 	return ComputeBudget{
-		C.golana_compute_budget_create(C.uint64_t(computeUnitLimit), C.size_t(maxInstructionTraceLength), C.size_t(maxInvokeStackHeight)),
+		C.golana_compute_budget_create(C.uint64_t(computeUnitLimit), C.size_t(maxInstructionTraceLength), C.size_t(maxInvokeStackHeight), C.size_t(maxStackFrameSize), C.uint32_t(maxHeapSize)),
 	}
 }
 

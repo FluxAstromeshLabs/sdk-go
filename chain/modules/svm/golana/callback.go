@@ -59,7 +59,6 @@ type TxCallbackContextI interface {
 	SetAllMsgs(msgs []*types.MsgTransaction)
 	GetMsg(txId uint64) *types.MsgTransaction
 	Execute(msg *types.MsgTransaction) (uint64, []string, error)
-	ExecuteEndBlocker(nodeId int) (uint64, []string, error)
 	GetAccount(pk []byte) TransactionAccount
 	SetAccount(acc *types.Account)
 	Done()
@@ -69,17 +68,19 @@ var _ TxCallbackContextI = &TxCallbackContext{}
 
 // implement a default callback set
 type TxCallbackContext struct {
-	ctx      sdk.Context
-	vmKeeper VmKeeper
-	msgs     []*types.MsgTransaction
-	cbPtr    *C.golana_tx_callback
+	ctx         sdk.Context
+	vmKeeper    VmKeeper
+	msgs        []*types.MsgTransaction
+	cbPtr       *C.golana_tx_callback
+	sysvarCache SysvarCache
 }
 
-func NewTxCallbackContext(ctx sdk.Context, keeper VmKeeper) TxCallbackContextI {
+func NewTxCallbackContext(ctx sdk.Context, keeper VmKeeper, sysvarCache SysvarCache) TxCallbackContextI {
 	impl := &TxCallbackContext{
-		ctx:      ctx,
-		vmKeeper: keeper,
-		msgs:     []*types.MsgTransaction{},
+		ctx:         ctx,
+		vmKeeper:    keeper,
+		msgs:        []*types.MsgTransaction{},
+		sysvarCache: sysvarCache,
 	}
 	return impl
 }
@@ -104,7 +105,10 @@ func (cb *TxCallbackContext) Execute(msg *types.MsgTransaction) (uint64, []strin
 
 	// execute all instructions in a msg
 	totalUnitConsumed := C.uint64_t(0)
-	result := C.golana_execute(cb.cbPtr, C.uint64_t(0), &totalUnitConsumed)
+	result := C.golana_execute(cb.cbPtr, C.uint64_t(0), &totalUnitConsumed, cb.sysvarCache.sysvarCache)
+	defer func() {
+		C.golana_result_free(result)
+	}()
 
 	// unpack log
 	length := int(C.golana_result_log_len(result))
@@ -118,37 +122,8 @@ func (cb *TxCallbackContext) Execute(msg *types.MsgTransaction) (uint64, []strin
 		err := C.GoString(C.golana_result_error(result))
 		return 0, logs, fmt.Errorf(err)
 	}
-
-	// free result
-	C.golana_result_free(result)
 
 	return uint64(totalUnitConsumed), logs, nil
-}
-
-func (cb *TxCallbackContext) ExecuteEndBlocker(nodeId int) (uint64, []string, error) {
-	ptr := TxCallbackWrapperNew()
-	callbackMap.Store(uintptr(unsafe.Pointer(ptr)), cb)
-
-	unitConsumed := C.uint64_t(0)
-	result := C.golana_execute(ptr, C.uint64_t(nodeId), &unitConsumed)
-
-	// unpack log
-	length := int(C.golana_result_log_len(result))
-	logsPtr := (*[1 << 30]*C.char)(unsafe.Pointer(C.golana_result_log_ptr(result)))[:length:length]
-	logs := make([]string, length)
-	for i, ptr := range logsPtr {
-		logs[i] = C.GoString(ptr)
-	}
-
-	if C.golana_result_error(result) != nil {
-		err := C.GoString(C.golana_result_error(result))
-		return 0, logs, fmt.Errorf(err)
-	}
-
-	// free result
-	C.golana_result_free(result)
-
-	return uint64(unitConsumed), logs, nil
 }
 
 func (cb *TxCallbackContext) GetAccount(pubkey []byte) TransactionAccount {
@@ -168,15 +143,6 @@ func (cb *TxCallbackContext) GetAccount(pubkey []byte) TransactionAccount {
 }
 
 func (cb *TxCallbackContext) SetAccount(account *types.Account) {
-	/*
-		svm allows account creation with
-		0 lamports / 0 data => rent exempted
-		0 lamports / n data => not rent exempted => will be reclaimed right away by solana
-	*/
-	// we can stay in line with solana behavior here by simply skipping persisting data when lamports < rent exemption amount
-	if account.Lamports < types.GetRentExemptLamportAmount(uint64(len(account.Data))) {
-		return
-	}
 	cb.vmKeeper.KVSetAccount(cb.ctx, account)
 }
 
@@ -195,7 +161,7 @@ func getComputeBudget(caller *C.void, tx_id C.uint64_t) *C.golana_compute_budget
 	}
 
 	msg := wrapper.(TxCallbackContextI).GetMsg(uint64(tx_id))
-	computeBudget := NewComputeBudget(msg.ComputeBudget, types.DefaultMaxInstructionTraceLength, 8)
+	computeBudget := NewComputeBudget(msg.ComputeBudget, types.DefaultMaxInstructionTraceLength, types.DefaultMaxInvokeStackHeight, types.DefaultStackFrameSize, types.DefaultHeapSize)
 	return computeBudget.computeBudget
 }
 
