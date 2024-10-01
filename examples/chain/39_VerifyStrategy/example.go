@@ -1,12 +1,9 @@
 package main
 
 import (
-	"encoding/hex"
 	"fmt"
 	"os"
 	"strings"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	_ "embed"
 
@@ -18,11 +15,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-)
-
-var (
-	//go:embed strategy.wasm
-	strategyBinary []byte
 )
 
 func main() {
@@ -51,7 +43,7 @@ func main() {
 	// init client ctx
 	clientCtx, senderAddress, err := chaintypes.NewClientContext(
 		network.ChainId,
-		"user1",
+		"user2",
 		kr,
 	)
 	if err != nil {
@@ -68,35 +60,11 @@ func main() {
 		fmt.Println(err)
 	}
 
-	msg := &strategytypes.MsgConfigStrategy{
-		Sender:   senderAddress.String(),
-		Config:   strategytypes.Config_deploy,
-		Id:       "",
-		Strategy: strategyBinary,
-		Query: &types.FISQueryRequest{
-			// track balances of accounts you want to make the amount even
-			Instructions: []*types.FISQueryInstruction{
-				{
-					Plane:   types.Plane_COSMOS,
-					Action:  types.QueryAction_COSMOS_BANK_BALANCE,
-					Address: []byte{},
-					Input: [][]byte{
-						[]byte("lux1cml96vmptgw99syqrrz8az79xer2pcgp209sv4,lux1jcltmuhplrdcwp7stlr4hlhlhgd4htqhu86cqx"),
-						[]byte("lux,lux"),
-					},
-				},
-			},
-		},
-		TriggerPermission: &strategytypes.PermissionConfig{
-			Type:      strategytypes.AccessType_only_addresses,
-			Addresses: []string{senderAddress.String()},
-		},
-		Metadata: &strategytypes.StrategyMetadata{
-			Description: "Listen to balances change and even out account balance for certain denom",
-			Type:        strategytypes.StrategyType_STRATEGY,
-			Logo:        "https://img.icons8.com/?size=100&id=GRjuzy9lKwQD&format=png&color=000000",
-			Website:     "https://www.astromesh.xyz/",
-		},
+	msg := &strategytypes.MsgVerifyStrategy{
+		Sender:          senderAddress.String(),
+		ContractAddress: "ab6b4d064c968eca87f775d2493a222987052bc0",
+		Plane:           types.Plane_EVM,
+		StrategyId:      "3aa5950ba84793c22beffbe095278a3626fefdb5f2dc6c62042faa1da7a272bf",
 	}
 
 	//AsyncBroadcastMsg, SyncBroadcastMsg, QueueBroadcastMsg
@@ -104,23 +72,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-
+	fmt.Println("tx hash", res.TxResponse.TxHash)
 	fmt.Println("gas used/want:", res.TxResponse.GasUsed, "/", res.TxResponse.GasWanted)
-	hexResp, err := hex.DecodeString(res.TxResponse.Data)
-	if err != nil {
-		panic(err)
-	}
-
-	// decode result to get contract address
-	var txData sdk.TxMsgData
-	if err := txData.Unmarshal(hexResp); err != nil {
-		panic(err)
-	}
-
-	var response strategytypes.MsgConfigStrategyResponse
-	if err := response.Unmarshal(txData.MsgResponses[0].Value); err != nil {
-		panic(err)
-	}
-
-	fmt.Println("strategy id:", response.Id)
 }
