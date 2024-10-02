@@ -1,19 +1,18 @@
-package golana
+package types
 
 import (
-	"github.com/FluxNFTLabs/sdk-go/chain/modules/svm/types"
 	"github.com/gagliardetto/solana-go"
 )
 
-func ToCosmosMsg(signers []string, computeBudget uint64, tx *solana.Transaction) *types.MsgTransaction {
+func ToCosmosMsg(signers []string, computeBudget uint64, tx *solana.Transaction) *MsgTransaction {
 	pubkeys := []string{}
 	for _, p := range tx.Message.AccountKeys {
 		pubkeys = append(pubkeys, p.String())
 	}
 
-	ixs := []*types.Instruction{}
+	ixs := []*Instruction{}
 	for _, ix := range tx.Message.Instructions {
-		fluxInstr := &types.Instruction{
+		fluxInstr := &Instruction{
 			ProgramIndex: []uint32{uint32(ix.ProgramIDIndex)},
 			Data:         ix.Data,
 		}
@@ -24,7 +23,7 @@ func ToCosmosMsg(signers []string, computeBudget uint64, tx *solana.Transaction)
 		}
 
 		for _, a := range accounts {
-			fluxInstr.Accounts = append(fluxInstr.Accounts, &types.InstructionAccount{
+			fluxInstr.Accounts = append(fluxInstr.Accounts, &InstructionAccount{
 				IdIndex:     uint32(positionOf(a.PublicKey, tx.Message.AccountKeys)),
 				CallerIndex: uint32(positionOf(a.PublicKey, tx.Message.AccountKeys)),
 				CalleeIndex: uint32(positionOfPubkeyInAccountMetas(a.PublicKey, accounts)),
@@ -35,7 +34,7 @@ func ToCosmosMsg(signers []string, computeBudget uint64, tx *solana.Transaction)
 		ixs = append(ixs, fluxInstr)
 	}
 
-	return &types.MsgTransaction{
+	return &MsgTransaction{
 		Signers:       signers,
 		Accounts:      pubkeys,
 		Instructions:  ixs,
