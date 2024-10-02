@@ -5,7 +5,6 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/FluxNFTLabs/sdk-go/chain/modules/astromesh/types"
-	evmtypes "github.com/FluxNFTLabs/sdk-go/chain/modules/evm/types"
 	svmtypes "github.com/FluxNFTLabs/sdk-go/chain/modules/svm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -21,10 +20,6 @@ type AccountKeeper interface {
 
 type WasmKeeper interface {
 	GetContractInfo(ctx context.Context, contractAddress sdk.AccAddress) *wasmtypes.ContractInfo
-}
-
-type EvmKeeper interface {
-	GetContractInfo(ctx context.Context, address []byte) (*evmtypes.ContractInfo, bool)
 }
 
 type SvmKeeper interface {

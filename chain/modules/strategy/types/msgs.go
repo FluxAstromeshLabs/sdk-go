@@ -107,7 +107,7 @@ func (m MsgTriggerStrategies) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{signer}
 }
 
-func (m *StrategyMetadata) ValidateBasic(query *types.FISQueryRequest, isUpdate bool) error {
+func (m *StrategyMetadata) ValidateBasic(query *types.FISQueryRequest, requireAppsUnverified bool) error {
 	if m == nil {
 		return fmt.Errorf("strategy metadata cannot be nil. Type must be defined")
 	}
@@ -115,23 +115,26 @@ func (m *StrategyMetadata) ValidateBasic(query *types.FISQueryRequest, isUpdate 
 	// ensure supported apps are not duplicated
 	seenApps := map[string]struct{}{}
 	for _, v := range m.SupportedApps {
-		appId := v.Plane.String() + v.ContractAddress
+		contractAddress, err := ParseContractAddr(v.ContractAddress, v.Plane)
+		if err != nil {
+			return fmt.Errorf("invalid contract address: %s (plane: %s), err: %w", v.ContractAddress, v.Plane.String(), err)
+		}
+
+		appId := v.Plane.String() + string(contractAddress)
 		if _, seen := seenApps[appId]; seen {
-			return fmt.Errorf("app duplicated: %s, plane: %s", v.ContractAddress, v.Plane)
+			return fmt.Errorf("app contract duplicated: %s, plane: %s", v.ContractAddress, v.Plane)
 		}
 		seenApps[appId] = struct{}{}
 	}
 
-	// ensure all apps are not verified during config phase
-	if !isUpdate {
+	// ensure all apps are not verified in config phase
+	if requireAppsUnverified {
 		for _, v := range m.SupportedApps {
 			if v.Verified {
 				return fmt.Errorf("app must not be verified: %s, plane: %s", v.Name, v.Plane)
 			}
 		}
 	}
-
-	// TODO: verify contract addresses syntax
 
 	switch m.Type {
 	case StrategyType_STRATEGY:

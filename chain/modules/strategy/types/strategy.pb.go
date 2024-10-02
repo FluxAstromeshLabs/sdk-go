@@ -537,7 +537,8 @@ type StrategyMetadata struct {
 	CronInput string `protobuf:"bytes,10,opt,name=cron_input,json=cronInput,proto3" json:"cron_input,omitempty"`
 	// timestamp interval (s) to trigger cron bots
 	CronInterval uint64 `protobuf:"varint,11,opt,name=cron_interval,json=cronInterval,proto3" json:"cron_interval,omitempty"`
-	// declares interacted dapps so that app owner can verify and we know which bot is serving what dapp
+	// declares interacted dapps so that app owner can verify and we know which
+	// bot is serving what dapp
 	SupportedApps []*SupportedApp `protobuf:"bytes,12,rep,name=supported_apps,json=supportedApps,proto3" json:"supported_apps,omitempty"`
 }
 

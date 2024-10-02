@@ -122,7 +122,7 @@ type HostKeeper interface {
 	GetContractNonce(ctx context.Context, addr []byte) uint64
 	SetContractNonce(ctx context.Context, addr []byte, nonce uint64)
 	EmitDeployEvent(ctx context.Context, contractInfo *types.ContractInfo)
-	SetContractInfo(ctx context.Context, address []byte, contractInfo types.ContractInfo)
+	SetStrategyVerifier(ctx context.Context, address []byte, verifier []byte)
 }
 
 type VmKeeper interface {
