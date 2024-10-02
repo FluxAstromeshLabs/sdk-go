@@ -67,7 +67,6 @@ func main() {
 		NewVerifier: "lux1cml96vmptgw99syqrrz8az79xer2pcgp209sv4",
 	}
 
-	//AsyncBroadcastMsg, SyncBroadcastMsg, QueueBroadcastMsg
 	res, err := chainClient.SyncBroadcastMsg(msg)
 	if err != nil {
 		fmt.Println(err)

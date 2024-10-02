@@ -62,9 +62,9 @@ func main() {
 
 	msg := &strategytypes.MsgVerifyStrategy{
 		Sender:          senderAddress.String(),
-		ContractAddress: "ab6b4d064c968eca87f775d2493a222987052bc0",
-		Plane:           types.Plane_EVM,
-		StrategyId:      "3aa5950ba84793c22beffbe095278a3626fefdb5f2dc6c62042faa1da7a272bf",
+		ContractAddress: "lux14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sm3tpfk",
+		Plane:           types.Plane_WASM,
+		StrategyId:      "82ae6b9ee2353a6bd7e22012edd3309c29ab836f8afc24ea6a0d40dc5d9ed208",
 	}
 
 	//AsyncBroadcastMsg, SyncBroadcastMsg, QueueBroadcastMsg
