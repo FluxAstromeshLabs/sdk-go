@@ -53,7 +53,6 @@ func main() {
 		"user1",
 		kr,
 	)
-
 	if err != nil {
 		panic(err)
 	}
@@ -76,34 +75,7 @@ func main() {
 		Strategy: cronBinary,
 		Query: &types.FISQueryRequest{
 			// track balances of accounts you want to make the amount even
-			Instructions: []*types.FISQueryInstruction{
-				{
-					Plane: types.Plane_COSMOS,
-					Action: types.QueryAction_COSMOS_QUERY,
-					Address: []byte{},
-					Input: [][]byte{
-						[]byte(`
-						{
-							"rewards": [
-							  {
-								"validator_address": "luxvaloper1qry5x2d383v9hkqc0fpez53yluyxvey2c957m4",
-								"reward": [
-								  {
-									"denom": "lux",
-									"amount": "1234567800000.000000000000000000"
-								  }
-							  }
-							],
-							"total": [
-							  {
-								"denom": "lux",
-								"amount": "1234567800000.000000000000000000"
-							  }
-							]
-						}`),
-					},		
-				},
-			},
+			Instructions: []*types.FISQueryInstruction{},
 		},
 		TriggerPermission: &strategytypes.PermissionConfig{
 			Type:      strategytypes.AccessType_only_addresses,
@@ -118,7 +90,7 @@ func main() {
 			Tags:         []string{"cron", "bank", "util"},
 			Schema:       "",
 			CronGasPrice: math.NewIntFromUint64(500000000),
-			CronInput:    `{}`,
+			CronInput:    `{"receiver":"lux158ucxjzr6ccrlpmz8z05wylu8tr5eueqcp2afu","amount":"1","denom":"lux"}`,
 			CronInterval: 2,
 		},
 	}
