@@ -161,7 +161,7 @@ func placeOrder(
 ) {
 	senderAddress := userClient.FromAddress()
 	state, _, err := solana.FindProgramAddress([][]byte{
-		[]byte("drift_state"),
+		[]byte("drift_statea"),
 	}, drift.ProgramID)
 
 	user, _, err := solana.FindProgramAddress([][]byte{
