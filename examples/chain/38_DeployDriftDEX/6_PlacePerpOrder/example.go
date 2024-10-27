@@ -161,7 +161,7 @@ func placeOrder(
 ) {
 	senderAddress := userClient.FromAddress()
 	state, _, err := solana.FindProgramAddress([][]byte{
-		[]byte("drift_statea"),
+		[]byte("drift_state"),
 	}, drift.ProgramID)
 
 	user, _, err := solana.FindProgramAddress([][]byte{
@@ -571,31 +571,31 @@ func main() {
 	}
 
 	fmt.Println("waiting for some seconds for auctions to complete...")
-	time.Sleep(11 * time.Second)
+	// time.Sleep(11 * time.Second)
 
-	fmt.Println("=== fill all orders against vAMM ===")
-	// actually anyone can call this fill_perp_order instruction to fill the order with vAMM
-	driftUser = getDriftUserInfo(chainClient, userSvmPubkey)
-	for _, o := range driftUser.Orders {
-		if o.Status == drift.OrderStatusOpen {
-			fillPerpOrder(
-				chainClient,
-				userSvmPubkey,
-				userSvmPubkey,
-				o.OrderId,
-				o.MarketIndex,
-				allMarkets,
-				allOracles,
-			)
-		}
-	}
+	// fmt.Println("=== fill all orders against vAMM ===")
+	// // actually anyone can call this fill_perp_order instruction to fill the order with vAMM
+	// driftUser = getDriftUserInfo(chainClient, userSvmPubkey)
+	// for _, o := range driftUser.Orders {
+	// 	if o.Status == drift.OrderStatusOpen {
+	// 		fillPerpOrder(
+	// 			chainClient,
+	// 			userSvmPubkey,
+	// 			userSvmPubkey,
+	// 			o.OrderId,
+	// 			o.MarketIndex,
+	// 			allMarkets,
+	// 			allOracles,
+	// 		)
+	// 	}
+	// }
 
-	fmt.Println("user positions:")
-	driftUser = getDriftUserInfo(chainClient, userSvmPubkey)
-	for _, o := range driftUser.PerpPositions {
-		if o.BaseAssetAmount != 0 {
-			bz, _ := json.MarshalIndent(o, "", "  ")
-			fmt.Println(string(bz))
-		}
-	}
+	// fmt.Println("user positions:")
+	// driftUser = getDriftUserInfo(chainClient, userSvmPubkey)
+	// for _, o := range driftUser.PerpPositions {
+	// 	if o.BaseAssetAmount != 0 {
+	// 		bz, _ := json.MarshalIndent(o, "", "  ")
+	// 		fmt.Println(string(bz))
+	// 	}
+	// }
 }

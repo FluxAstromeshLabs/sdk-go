@@ -19,11 +19,6 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var (
-	//go:embed drift_solver.wasm
-	intentSolverBinary []byte
-)
-
 func main() {
 	networkName := "local"
 	if len(os.Args) > 1 {
@@ -67,6 +62,11 @@ func main() {
 		fmt.Println(err)
 	}
 
+	intentSolverBinary, err := os.ReadFile("/Users/phucta/flux/nexus-bots/examples/solver/drift-solver/target/wasm32-unknown-unknown/release/drift_solver.wasm")
+	if err != nil {
+		panic(err)
+	}
+
 	msg := &strategytypes.MsgConfigStrategy{
 		Sender:   senderAddress.String(),
 		Config:   strategytypes.Config_deploy,
@@ -80,7 +80,7 @@ func main() {
 			Website:     "https://www.astromesh.xyz",
 			Type:        strategytypes.StrategyType_INTENT_SOLVER,
 			Tags:        strings.Split("Solver, Bank, Utility", ", "),
-			Schema:      ``,
+			Schema:      `{}`,
 		},
 	}
 
