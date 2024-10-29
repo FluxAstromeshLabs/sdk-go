@@ -93,7 +93,7 @@ func main() {
 		panic(err)
 	}
 
-	_, takerPubkey, err := chainClient.GetSVMAccountLink(context.Background(), takerAddress)
+	isSvmLinked, takerPubkey, err := chainClient.GetSVMAccountLink(context.Background(), takerAddress)
 	if err != nil {
 		panic(err)
 	}
@@ -119,10 +119,9 @@ func main() {
 	fmt.Println("taker user:", takerUser.String())
 	msgTriggerStategy := &strategytypes.MsgTriggerStrategies{
 		Sender: senderAddress.String(),
-		Ids:    []string{"e3bca3f5f8f3d8b38d64228572d5fe9814e1887a30417c4605e101fc4cf19e39"},
+		Ids:    []string{"e62a97984ad86c147eb5d45603ccfbb1973b42f0893e2394342fc80992b3541c"},
 		Inputs: [][]byte{
-			// []byte(`{"fill_perp_market_order":{"taker_svm_address":"` + takerPubkey.String() + `","taker_order_id":2,"percent":100}}`),
-			[]byte(`{"market":"btc","usdt_amount":"1000000","leverage":5,"auction_duration":10}`),
+			[]byte(`{"fill_perp_market_order":{"taker_svm_address":"` + takerPubkey.String() + `","taker_order_id":24,"percent":100}}`),
 		},
 		Queries: []*astromeshtypes.FISQueryRequest{
 			{
@@ -140,8 +139,8 @@ func main() {
 						Action:  astromeshtypes.QueryAction_VM_QUERY,
 						Address: nil,
 						Input: [][]byte{
-							takerUser[:],
 							fillerUser[:],
+							takerUser[:],
 						},
 					},
 				},

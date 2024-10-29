@@ -555,7 +555,7 @@ func main() {
 			drift.PositionDirectionLong,
 			1*time.Minute,
 			o.MarketIndex,
-			svm.Uint8Ptr(10),
+			svm.Uint8Ptr(100),
 			allMarkets,
 			allOracles,
 		)
