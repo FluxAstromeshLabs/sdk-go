@@ -24,7 +24,6 @@ var (
 	intentSolverBinary []byte
 )
 
-
 func main() {
 	networkName := "local"
 	if len(os.Args) > 1 {
@@ -76,12 +75,12 @@ func main() {
 		Query:    &types.FISQueryRequest{},
 		Metadata: &strategytypes.StrategyMetadata{
 			Name:        "Drift Solver",
-			Description: "Solver simplifies drift interactions. Available options:  leverage: 1..20, market: 'btc-usdt', 'eth-usdt', 'sol-usdt', auction_duration: 10..255, percent: 1..100, taker_svm_address: base58 pubkey of taker",
+			Description: "The drift intent solver for Drift Protocol v2 enables optimized order matching and execution, enhancing liquidity management and minimizing slippage for improved trade outcomes\n\n**Available options:**\n\ndirection: `long`, `short`\nleverage: `1..20`, \n\nmarket: `'btc-usdt`, `eth-usdt`, `sol-usdt`, \n\nauction_duration: `10..255`, \n\npercent: `1..100`, \n\ntaker_svm_address: base58 pubkey of taker\n",
 			Logo:        "https://img.icons8.com/?size=100&id=Wnx66N0cnKa7&format=png&color=000000",
 			Website:     "https://www.astromesh.xyz",
 			Type:        strategytypes.StrategyType_INTENT_SOLVER,
-			Tags:        strings.Split("Solver, Bank, Utility", ", "),
-			Schema:      `{
+			Tags:        strings.Split("Drift, DeFi", ", "),
+			Schema: `{
 				"groups": [
 				  {
 					"name": "",
@@ -152,6 +151,14 @@ func main() {
 				  }
 				]
 			  }`,
+			SupportedApps: []*strategytypes.SupportedApp{
+				{
+					Name:            "Drift protocol v2",
+					ContractAddress: "FLR3mfYrMZUnhqEadNJVwjUhjX8ky9vE9qTtDmkK4vwC",
+					Plane:           types.Plane_SVM,
+					Verified:        false,
+				},
+			},
 		},
 	}
 
