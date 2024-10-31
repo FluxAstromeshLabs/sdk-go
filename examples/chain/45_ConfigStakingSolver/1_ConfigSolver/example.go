@@ -76,7 +76,7 @@ func main() {
 		Metadata: &strategytypes.StrategyMetadata{
 			Name:        "Staking Solver",
 			Description: "Simplifies financial transfers by allowing retail users to batch multiple requests using easy, human-readable prompts.",
-			Logo:        "https://app.astromesh.xyz/nexus-bots/cron-service/compound_staking_cron.png",
+			Logo:        "https://icons.veryicon.com/png/o/business/work-circle/proof-of-stake.png",
 			Website:     "https://www.astromesh.xyz",
 			Type:        strategytypes.StrategyType_INTENT_SOLVER,
 			Tags:        strings.Split("Solver, Bank, Utility", ", "),
