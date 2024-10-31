@@ -75,7 +75,7 @@ func main() {
 		Query:    &types.FISQueryRequest{},
 		Metadata: &strategytypes.StrategyMetadata{
 			Name:        "Drift Solver",
-			Description: "The drift intent solver for Drift Protocol v2 enables optimized order matching and execution, enhancing liquidity management and minimizing slippage for improved trade outcomes\n\n**Available options:**\n\ndirection: `long`, `short`\nleverage: `1..20`, \n\nmarket: `'btc-usdt`, `eth-usdt`, `sol-usdt`, \n\nauction_duration: `10..255`, \n\npercent: `1..100`, \n\ntaker_svm_address: base58 pubkey of taker\n",
+			Description: "The drift intent solver for Drift Protocol v2 enables optimized order matching and execution, enhancing liquidity management and minimizing slippage for improved trade outcomes\n\n**Available options:**\n\ndirection: `long`, `short`\n\nleverage: `1..20`, \n\nmarket: `'btc-usdt`, `eth-usdt`, `sol-usdt`, \n\nauction_duration: `10..255`, \n\npercent: `1..100`, \n\ntaker_svm_address: base58 pubkey of taker\n",
 			Logo:        "https://img.icons8.com/?size=100&id=Wnx66N0cnKa7&format=png&color=000000",
 			Website:     "https://www.astromesh.xyz",
 			Type:        strategytypes.StrategyType_INTENT_SOLVER,
