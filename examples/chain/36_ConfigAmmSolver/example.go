@@ -91,7 +91,7 @@ func main() {
 			SupportedApps: []*strategytypes.SupportedApp{
 				{
 					Name:            "Uniswap",
-					ContractAddress: "e2f81b30e1d47dffdbb6ab41ec5f0572705b026d",
+					ContractAddress: "366c9837f9a32cc11ac5cac1602e57b73e6bf784",
 					Plane:           types.Plane_EVM,
 					Verified:        false,
 				},
