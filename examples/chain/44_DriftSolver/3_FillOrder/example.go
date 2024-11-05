@@ -18,6 +18,8 @@ import (
 	"github.com/gagliardetto/solana-go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"github.com/FluxNFTLabs/sdk-go/chain/indexer/explorer"
 )
 
 func main() {
@@ -59,6 +61,14 @@ func main() {
 		panic(err)
 	}
 
+	fmt.Println("connecting to indexer ...")
+	indexerConn, err := grpc.Dial("localhost:4474", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	defer cc.Close()
+	if err != nil {
+		panic(err)
+	}
+	explorerClient := explorer.NewAPIClient(indexerConn)
+
 	fmt.Println("sender address:", senderAddress.String())
 	driftProgramId := solana.MustPublicKeyFromBase58("FLR3mfYrMZUnhqEadNJVwjUhjX8ky9vE9qTtDmkK4vwC")
 	// check if account is linked, not then create
@@ -78,32 +88,6 @@ func main() {
 		fmt.Println("sender is already linked to svm address:", svmPubkey.String())
 	}
 
-	takerKr, err := kr.Key("user1")
-	if err != nil {
-		panic(err)
-	}
-
-	takerAddress, err := takerKr.GetAddress()
-	if err != nil {
-		panic(err)
-	}
-
-	isSvmLinked, takerPubkey, err := chainClient.GetSVMAccountLink(context.Background(), takerAddress)
-	if err != nil {
-		panic(err)
-	}
-
-	if !isSvmLinked {
-		panic(fmt.Errorf("taker is not linked: %s", takerAddress.String()))
-	}
-
-	takerUser, _, err := solana.FindProgramAddress([][]byte{
-		[]byte("user"), takerPubkey[:], {0, 0},
-	}, driftProgramId)
-	if err != nil {
-		panic(err)
-	}
-
 	fillerUser, _, err := solana.FindProgramAddress([][]byte{
 		[]byte("user"), svmPubkey[:], {0, 0},
 	}, driftProgramId)
@@ -111,38 +95,72 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("taker user:", takerUser.String())
-	msgTriggerStategy := &strategytypes.MsgTriggerStrategies{
-		Sender: senderAddress.String(),
-		Ids:    []string{"57a41e617e566f916ac6a4fc537cb01a7d77fb2d94e4e1a17cf94347c51539cb"},
-		Inputs: [][]byte{
-			[]byte(`{"fill_perp_market_order":{"taker_svm_address":"` + takerPubkey.String() + `","taker_order_id":"25","percent":"100"}}`),
+	priceLimit := 64500_000_000
+	quantity := 1000000
+	fillableOrderResp, err := explorerClient.ListFillableDriftJITOrders(
+		context.Background(), &explorer.ListFillableDriftJITOrdersRequest{
+			MarketName: "btc-usdt",
+			WorstPrice: uint64(priceLimit),
+			Direction:  "short",
+			Quantity:   uint64(quantity),
 		},
-		Queries: []*astromeshtypes.FISQueryRequest{
-			{
-				Instructions: []*astromeshtypes.FISQueryInstruction{
-					{
-						Plane:   astromeshtypes.Plane_COSMOS,
-						Action:  astromeshtypes.QueryAction_COSMOS_QUERY,
-						Address: nil,
-						Input: [][]byte{
-							[]byte("/flux/svm/v1beta1/account_link/cosmos/" + senderAddress.String()),
-						},
+	)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Going to fill against", len(fillableOrderResp.FillableOrders), "order(s)")
+	if len(fillableOrderResp.FillableOrders) == 0 {
+		fmt.Println("Nothing to fill, exit")
+		return
+	}
+
+	inputs := [][]byte{}
+	queries := []*astromeshtypes.FISQueryRequest{}
+	strategyId := "19385c1578a1d31b9bded3d83cce11b3fcfb283ac0a5d518b3619c3728d55a7b"
+
+	strategyIds := []string{}
+	for _, o := range fillableOrderResp.FillableOrders {
+		fillMsg := fmt.Sprintf(
+			`{"fill_perp_market_order":{"taker_svm_address":"%s","taker_order_id":"%d","quantity":"%d"}}`,
+			o.OwnerAddress, o.OrderId, o.FillableQuantity,
+		)
+		takerUser, _, err := solana.FindProgramAddress([][]byte{
+			[]byte("user"), solana.MustPublicKeyFromBase58(o.OwnerAddress).Bytes(), {0, 0},
+		}, driftProgramId)
+		if err != nil {
+			panic(err)
+		}
+		strategyIds = append(strategyIds, strategyId)
+		inputs = append(inputs, []byte(fillMsg))
+		queries = append(queries, &astromeshtypes.FISQueryRequest{
+			Instructions: []*astromeshtypes.FISQueryInstruction{
+				{
+					Plane:   astromeshtypes.Plane_COSMOS,
+					Action:  astromeshtypes.QueryAction_COSMOS_QUERY,
+					Address: nil,
+					Input: [][]byte{
+						[]byte("/flux/svm/v1beta1/account_link/cosmos/" + senderAddress.String()),
 					},
-					{
-						Plane:   astromeshtypes.Plane_SVM,
-						Action:  astromeshtypes.QueryAction_VM_QUERY,
-						Address: nil,
-						Input: [][]byte{
-							fillerUser[:],
-							takerUser[:],
-						},
+				},
+				{
+					Plane:   astromeshtypes.Plane_SVM,
+					Action:  astromeshtypes.QueryAction_VM_QUERY,
+					Address: nil,
+					Input: [][]byte{
+						fillerUser[:],
+						takerUser[:],
 					},
 				},
 			},
-		},
+		})
 	}
 
+	msgTriggerStategy := &strategytypes.MsgTriggerStrategies{
+		Sender:  senderAddress.String(),
+		Ids:     strategyIds,
+		Inputs:  inputs,
+		Queries: queries,
+	}
 	res, err := chainClient.SyncBroadcastMsg(msgTriggerStategy)
 	if err != nil {
 		panic(err)

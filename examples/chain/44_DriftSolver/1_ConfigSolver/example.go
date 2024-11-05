@@ -67,6 +67,13 @@ func main() {
 		panic(err)
 	}
 
+	// connect indexer
+	cc, err = grpc.Dial("localhost:4454", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	defer cc.Close()
+	if err != nil {
+		panic(err)
+	}
+
 	msg := &strategytypes.MsgConfigStrategy{
 		Sender:   senderAddress.String(),
 		Config:   strategytypes.Config_deploy,
@@ -189,3 +196,5 @@ func main() {
 
 	fmt.Println("strategy id:", response.Id)
 }
+
+// fill ${percent:number}% of order ${taker_order_id:number} from ${taker_svm_address:string}
