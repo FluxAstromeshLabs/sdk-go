@@ -77,7 +77,7 @@ func main() {
 			Name:        "Drift Solver",
 			Description: "The Drift solver for Drift Protocol v2 simplifies drift order creation and matching, enhancing liquidity management and minimizing slippage for improved trade outcomes\n\n**Available options:**\n\ndirection: `long`, `short`\n\nleverage: `1..20`, \n\nmarket: `btc-usdt`, `eth-usdt`, `sol-usdt`, \n\nauction_duration: `10..255`, \n\npercent: `1..100`,\n\ntaker_svm_address: base58 pubkey of taker\n",
 			Logo:        "https://camo.githubusercontent.com/1359e372dc137431980bd1899fa66aa67bb317c8af840decedbcc74d7434c160/68747470733a2f2f75706c6f6164732d73736c2e776562666c6f772e636f6d2f3631313538303033356164353962323034333765623032342f3631366639376134326635363337633435313764303139335f4c6f676f2532302831292532302831292e706e67",
-			Website:     "https://www.astromesh.xyz",
+			Website:     "https://www.drift.trade",
 			Type:        strategytypes.StrategyType_INTENT_SOLVER,
 			Tags:        strings.Split("Drift, DeFi", ", "),
 			Schema: `{
