@@ -86,7 +86,7 @@ func main() {
 				"name": "",
 				"prompts": {
 					"place_perp_market_order": {
-					"template": "open a ${direction:string} position, margin ${usdt_amount:number} usdt, ${leverage:number}x leverage on ${market:string} market, with ${auction_duration:number} blocks auction time",
+					"template": "open ${direction:string} market take order, margin ${usdt_amount:number} usdt, ${leverage:number}x leverage on ${market:string} market, with ${auction_duration:number} blocks auction time",
 					"msg_fields": [
 						"direction",
 						"market",
