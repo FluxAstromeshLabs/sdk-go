@@ -81,44 +81,44 @@ func main() {
 			Type:        strategytypes.StrategyType_INTENT_SOLVER,
 			Tags:        strings.Split("Drift, DeFi", ", "),
 			Schema: `{
-			"groups": [
-				{
-				"name": "",
-				"prompts": {
-					"place_perp_market_order": {
-					"template": "open ${direction:string} market take order, margin ${usdt_amount:number} usdt, ${leverage:number}x leverage on ${market:string} market, with ${auction_duration:number} blocks auction time",
-					"msg_fields": [
-						"direction",
-						"market",
-						"usdt_amount",
-						"leverage",
-						"auction_duration"
-					],
-					"query": {
-						"instructions": [
-						{
-							"plane": "COSMOS",
-							"action": "COSMOS_QUERY",
-							"address": "",
-							"input": [
+				"groups": [
+					{
+					"name": "",
+					"prompts": {
+						"place_perp_market_order": {
+						"template": "open ${direction:string} market take order, margin ${usdt_amount:number} usdt, ${leverage:number}x leverage on ${market:string} market, with ${auction_duration:number} blocks auction time",
+						"msg_fields": [
+							"direction",
+							"market",
+							"usdt_amount",
+							"leverage",
+							"auction_duration"
+						],
+						"query": {
+							"instructions": [
+							{
+								"plane": "COSMOS",
+								"action": "COSMOS_QUERY",
+								"address": "",
+								"input": [
 								"L2ZsdXgvc3ZtL3YxYmV0YTEvYWNjb3VudF9saW5rL2Nvc21vcy8ke3dhbGxldH0="
-							]
-						},
-						{
-							"plane": "SVM",
-							"action": "VM_QUERY",
-							"address": "",
-							"input": [
+								]
+							},
+							{
+								"plane": "SVM",
+								"action": "VM_QUERY",
+								"address": "",
+								"input": [
 								"e3twZGEgInVzZXIiIChkZWNvZGVCYXNlNTggc3ZtQWRkcmVzcykgIgAAIiAiRkxSM21mWXJNWlVuaHFFYWROSlZ3alVoalg4a3k5dkU5cVR0RG1rSzR2d0MifX0=",
 								"YMwDCsPHRPr0xHohVBxQl+FYRFUF36nbnAN1pWrwMMw=",
 								"wfqTmNCHrLG9FeC5DUYyhIr4UcF7a6KMXwRj5Flc7mo=",
 								"EshKWsw7y2eqtJaEnz8s3hsFx3x7TnpgirCMBasb/X0="
+								]
+							}
 							]
 						}
-						]
-					}
-					},
-					"fill_perp_market_order": {
+						},
+						"fill_perp_market_order": {
 						"template": "fill JIT ${direction:string} orders of market ${market:string} at price ${price:string}, quantity ${quantity:number}",
 						"msg_fields": [
 							"direction",
@@ -129,10 +129,10 @@ func main() {
 						"query": {
 							"instructions": []
 						}
+						}
 					}
-				}
-				}
-			]
+					}
+				]
 			}`,
 			SupportedApps: []*strategytypes.SupportedApp{
 				{
