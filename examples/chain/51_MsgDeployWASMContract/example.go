@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"strconv"
@@ -11,7 +13,9 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	chaintypes "github.com/FluxNFTLabs/sdk-go/chain/types"
 	"github.com/FluxNFTLabs/sdk-go/client/common"
+	"github.com/cometbft/cometbft/crypto/tmhash"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -24,6 +28,19 @@ var (
 )
 
 func main() {
+	valAddr, err := sdk.ValAddressFromBech32("luxvaloper1qry5x2d383v9hkqc0fpez53yluyxvey2c957m4")
+	if err != nil {
+		panic(err)
+	}
+
+	consAddrPub, err := base64.StdEncoding.DecodeString("uQi1wxB44tBRDWRU4h1IhdWy7RIB2gXe/v8jdthNbeE=")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("val addr:", hex.EncodeToString(valAddr), hex.EncodeToString(tmhash.Sum(consAddrPub)))
+
+	return
 	network := common.LoadNetwork("local", "")
 	kr, err := keyring.New(
 		"fluxd",
