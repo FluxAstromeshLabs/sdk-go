@@ -60,7 +60,7 @@ func main() {
 	}
 
 	fmt.Println("sender address:", senderAddress.String())
-	id := "55f490301981aba354933e2e0a6ef94cb1e6ae562765d03751439dda9b328e58"
+	id := "c666878dd41c8594615060332b1d8171eb754126e690d68857c6620a56510bab"
 	poolAddress := "lux1z5mjdzgkqlpqs7rr97tk4xe83ds3wtvnw4advq"
 	msgTriggerStategy := &strategytypes.MsgTriggerStrategies{
 		Sender: senderAddress.String(),
@@ -68,7 +68,7 @@ func main() {
 		Inputs: [][]byte{
 			[]byte(
 				fmt.Sprintf(
-					`{"buy":{"denom":"astromesh/lux1jcltmuhplrdcwp7stlr4hlhlhgd4htqhu86cqx/chill-guy","amount":"2","slippage":"2000","pool_address":"%s"}}`, poolAddress,
+					`{"buy":{"denom":"astromesh/lux1jcltmuhplrdcwp7stlr4hlhlhgd4htqhu86cqx/chill-guy","amount":"2000000000","slippage":"2000","pool_address":"%s"}}`, poolAddress,
 				),
 			),
 		},

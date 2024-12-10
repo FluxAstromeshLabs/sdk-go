@@ -75,13 +75,13 @@ func main() {
 		Strategy: intentSolverBinary,
 		Query:    &types.FISQueryRequest{},
 		Metadata: &strategytypes.StrategyMetadata{
-			Name:        "Nexus Transfer Solver",
-			Description: "Simplifies financial transfers by allowing retail users to batch multiple requests using easy, human-readable prompts.\n\n**Available options:**\n\ndenom: `btc`, `eth`, `sol`, `usdt` or any other cosmos denoms",
+			Name:        "Dumpsad meme",
+			Description: "Hehe dump dump dump",
 			Logo:        "https://img.icons8.com/?size=100&id=Wnx66N0cnKa7&format=png&color=000000",
 			Website:     "https://www.astromesh.xyz",
 			Type:        strategytypes.StrategyType_INTENT_SOLVER,
 			Tags:        strings.Split("Solver, Bank, Utility", ", "),
-			Schema:      `{"groups":[{"name":"Nexus Transfer Solver","prompts":{"withdraw_all_planes":{"template":"withdraw ${denom:string} from planes to cosmos","query":{"instructions":[{"plane":"COSMOS","action":"COSMOS_ASTROMESH_BALANCE","address":"","input":["JHt3YWxsZXR9","JHtkZW5vbX0="]}]}},"deposit_equally":{"template":"deposit ${amount:number} ${denom:string} from cosmos to all planes equally","msg_fields":["amount","denom"],"query":{"instructions":[{"plane":"COSMOS","action":"COSMOS_BANK_BALANCE","address":"","input":["JHt3YWxsZXR9","JHtkZW5vbX0="]}]}}}}]}`,
+			Schema:      `{}`,
 		},
 	}
 

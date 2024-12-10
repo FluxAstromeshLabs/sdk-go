@@ -81,12 +81,7 @@ func main() {
 		fmt.Println("sender is already linked to svm address:", svmPubkey.String())
 	}
 
-	id := "55f490301981aba354933e2e0a6ef94cb1e6ae562765d03751439dda9b328e58"
-
-	// create chillguy
-	// chillguy => (10^9 tokens, 0 SOL) => market cap: 0
-	// (999682000, 1SOL) => price => market cap = price * coin_amount =>>>
-
+	id := "c666878dd41c8594615060332b1d8171eb754126e690d68857c6620a56510bab"
 	// idBz, _ := hex.DecodeString(id)
 	msgTriggerStategy := &strategytypes.MsgTriggerStrategies{
 		Sender: senderAddress.String(),
@@ -94,7 +89,7 @@ func main() {
 		Inputs: [][]byte{
 			[]byte(
 				fmt.Sprintf(
-					`{"create_token":{"name":"chill-guy","description":"just a chill guy","uri":"https://example.com/token-uri","target_vm":"EVM","bot_id":"%s"}}`,
+					`{"create_token":{"name":"chill-guy","description":"just a chill guy","uri":"https://example.com/token-uri","target_vm":"SVM","bot_id":"%s"}}`,
 					id,
 				),
 			),
