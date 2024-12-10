@@ -89,7 +89,7 @@ func main() {
 		Inputs: [][]byte{
 			[]byte(
 				fmt.Sprintf(
-					`{"create_token":{"name":"chill-guy","description":"just a chill guy","uri":"https://example.com/token-uri","target_vm":"SVM","bot_id":"%s"}}`,
+					`{"create_token":{"name":"chill-guy","description":"just a chill guy","uri":"https://example.com/token-uri","target_vm":"WASM","bot_id":"%s"}}`,
 					id,
 				),
 			),
