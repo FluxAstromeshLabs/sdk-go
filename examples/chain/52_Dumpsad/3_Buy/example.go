@@ -60,8 +60,9 @@ func main() {
 	}
 
 	fmt.Println("sender address:", senderAddress.String())
-	id := "c666878dd41c8594615060332b1d8171eb754126e690d68857c6620a56510bab"
+	id := "d538845c36f5446d5d9c89495651ee3e124f75fcd115108cc9a97596ceefe9cb"
 	poolAddress := "lux1z5mjdzgkqlpqs7rr97tk4xe83ds3wtvnw4advq"
+	// fmt.Println("poolId:", hex.EncodeToString(sdk.MustAccAddressFromBech32(poolAddress)))
 	msgTriggerStategy := &strategytypes.MsgTriggerStrategies{
 		Sender: senderAddress.String(),
 		Ids:    []string{id},

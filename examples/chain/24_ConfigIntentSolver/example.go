@@ -20,6 +20,7 @@ import (
 )
 
 var (
+	//go:embed plane_util.wasm
 	intentSolverBinary []byte
 )
 
@@ -65,8 +66,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	intentSolverBinary, _ := os.ReadFile("/Users/phucta/flux/nexus-bots/examples/solver/dumpsad-solver/target/wasm32-unknown-unknown/release/dumpsad_solver.wasm")
 
 	msg := &strategytypes.MsgConfigStrategy{
 		Sender:   senderAddress.String(),
