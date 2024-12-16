@@ -81,7 +81,7 @@ func main() {
 		fmt.Println("sender is already linked to svm address:", svmPubkey.String())
 	}
 
-	id := "217556e4590292cdddbb7cd183a4337c96434aa98c597ba9458e851b06438c10"
+	id := "ec396765b975312f945e71db30aaab153e6c2cac7099e434af924be9a0b9437f"
 	// idBz, _ := hex.DecodeString(id)
 	msgTriggerStategy := &strategytypes.MsgTriggerStrategies{
 		Sender: senderAddress.String(),
