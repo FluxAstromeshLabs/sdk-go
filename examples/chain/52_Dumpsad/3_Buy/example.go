@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"os"
 	"strings"
@@ -11,6 +12,7 @@ import (
 	chainclient "github.com/FluxNFTLabs/sdk-go/client/chain"
 	"github.com/FluxNFTLabs/sdk-go/client/common"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -60,17 +62,15 @@ func main() {
 	}
 
 	fmt.Println("sender address:", senderAddress.String())
-	id := "ec396765b975312f945e71db30aaab153e6c2cac7099e434af924be9a0b9437f"
+	id := "c0cf30d440ab0176dd156d0a67fe3b2953f01f0e6fdb80518d552569233da9a4"
 	poolAddress := "lux1z5mjdzgkqlpqs7rr97tk4xe83ds3wtvnw4advq"
-	// fmt.Println("poolId:", hex.EncodeToString(sdk.MustAccAddressFromBech32(poolAddress)))
+	fmt.Println("pool id:", hex.EncodeToString(sdk.MustAccAddressFromBech32(poolAddress)))
 	msgTriggerStategy := &strategytypes.MsgTriggerStrategies{
 		Sender: senderAddress.String(),
 		Ids:    []string{id},
 		Inputs: [][]byte{
 			[]byte(
-				fmt.Sprintf(
-					`{"buy":{"denom":"astromesh/lux1jcltmuhplrdcwp7stlr4hlhlhgd4htqhu86cqx/chill-guy","amount":"2000000000","slippage":"2000","pool_address":"%s"}}`, poolAddress,
-				),
+				`{"buy":{"denom":"astromesh/lux1jcltmuhplrdcwp7stlr4hlhlhgd4htqhu86cqx/CHILLGUY","amount":"2000000000","slippage":"2000"}}`,
 			),
 		},
 		Queries: []*astromeshtypes.FISQueryRequest{
@@ -78,11 +78,10 @@ func main() {
 				Instructions: []*astromeshtypes.FISQueryInstruction{
 					{
 						Plane:   astromeshtypes.Plane_COSMOS,
-						Action:  astromeshtypes.QueryAction_COSMOS_BANK_BALANCE,
+						Action:  astromeshtypes.QueryAction_COSMOS_QUERY,
 						Address: nil,
 						Input: [][]byte{
-							[]byte(poolAddress + "," + poolAddress),
-							[]byte("sol,astromesh/lux1jcltmuhplrdcwp7stlr4hlhlhgd4htqhu86cqx/chill-guy"),
+							[]byte("/flux/interpool/v1beta1/pools/" + hex.EncodeToString(sdk.MustAccAddressFromBech32(poolAddress))),
 						},
 					},
 				},
