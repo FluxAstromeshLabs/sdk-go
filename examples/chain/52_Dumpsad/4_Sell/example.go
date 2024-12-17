@@ -56,11 +56,6 @@ func main() {
 		panic(err)
 	}
 
-	// prepare tx msg
-	if err != nil {
-		panic(err)
-	}
-
 	fmt.Println("sender address:", senderAddress.String())
 	id := "c0cf30d440ab0176dd156d0a67fe3b2953f01f0e6fdb80518d552569233da9a4"
 	poolAddress := "lux1z5mjdzgkqlpqs7rr97tk4xe83ds3wtvnw4advq"
@@ -69,9 +64,7 @@ func main() {
 		Ids:    []string{id},
 		Inputs: [][]byte{
 			[]byte(
-				fmt.Sprintf(
-					`{"sell":{"denom":"astromesh/lux1jcltmuhplrdcwp7stlr4hlhlhgd4htqhu86cqx/CHILLGUY","amount":"100000000000000","slippage":"1000"}}`,
-				),
+				`{"sell":{"denom":"astromesh/lux1jcltmuhplrdcwp7stlr4hlhlhgd4htqhu86cqx/CHILLGUY","amount":"100000000000000","slippage":"1000"}}`,
 			),
 		},
 		Queries: []*astromeshtypes.FISQueryRequest{
