@@ -8,6 +8,7 @@ import (
 
 	_ "embed"
 
+	"cosmossdk.io/math"
 	"github.com/FluxNFTLabs/sdk-go/chain/modules/astromesh/types"
 	strategytypes "github.com/FluxNFTLabs/sdk-go/chain/modules/strategy/types"
 	chaintypes "github.com/FluxNFTLabs/sdk-go/chain/types"
@@ -21,6 +22,7 @@ import (
 
 var (
 	intentSolverBinary []byte
+	cronBinary         []byte
 )
 
 func main() {
@@ -67,6 +69,7 @@ func main() {
 	}
 
 	intentSolverBinary, _ := os.ReadFile("/Users/phucta/flux/nexus-bots/examples/solver/dumpsad-solver/target/wasm32-unknown-unknown/release/dumpsad_solver.wasm")
+	cronBinary, _ := os.ReadFile("/Users/phucta/flux/nexus-bots/examples/cron/dumpsad-cron/target/wasm32-unknown-unknown/release/dumpsad_cron.wasm")
 
 	msg := &strategytypes.MsgConfigStrategy{
 		Sender:   senderAddress.String(),
@@ -88,7 +91,7 @@ func main() {
 	//AsyncBroadcastMsg, SyncBroadcastMsg, QueueBroadcastMsg
 	res, err := chainClient.SyncBroadcastMsg(msg)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	fmt.Println("tx hash:", res.TxResponse.TxHash)
@@ -109,6 +112,70 @@ func main() {
 	if err := response.Unmarshal(txData.MsgResponses[0].Value); err != nil {
 		panic(err)
 	}
+	solverId := response.Id
 
-	fmt.Println("strategy id:", response.Id)
+	// config cron
+	msg = &strategytypes.MsgConfigStrategy{
+		Sender:   senderAddress.String(),
+		Config:   strategytypes.Config_deploy,
+		Id:       "",
+		Strategy: cronBinary,
+		Query: &types.FISQueryRequest{
+			Instructions: []*types.FISQueryInstruction{
+				{
+					Plane:  types.Plane_COSMOS,
+					Action: types.QueryAction_COSMOS_EVENT,
+					Input: [][]byte{
+						[]byte("strategy,flux.strategy.v1beta1.StrategyEvent"),
+					},
+				},
+				{
+					Plane:  types.Plane_COSMOS,
+					Action: types.QueryAction_COSMOS_KVSTORE,
+					Input: [][]byte{
+						// 	"wasm".as_bytes().to_vec(),
+						// [&[4u8], "lastContractId".as_bytes()].concat().to_vec(),
+						[]byte("wasm"),
+						append([]byte{4}, []byte("lastContractId")...),
+					},
+				},
+			},
+		},
+		Metadata: &strategytypes.StrategyMetadata{
+			Name:         "Dumpsad graduate",
+			Description:  "Just graduate",
+			Logo:         "https://img.icons8.com/?size=100&id=Wnx66N0cnKa7&format=png&color=000000",
+			Website:      "https://www.astromesh.xyz",
+			Type:         strategytypes.StrategyType_CRON,
+			Tags:         strings.Split("Solver, Bank, Utility", ", "),
+			Schema:       `{}`,
+			CronInput:    fmt.Sprintf(`{"solver_id":"%s"}`, solverId),
+			CronInterval: 0, // event listener
+			CronGasPrice: math.NewInt(500_000_000),
+		},
+	}
+
+	res, err = chainClient.SyncBroadcastMsg(msg)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("tx hash:", res.TxResponse.TxHash)
+	fmt.Println("gas used/want:", res.TxResponse.GasUsed, "/", res.TxResponse.GasWanted)
+
+	hexResp, err = hex.DecodeString(res.TxResponse.Data)
+	if err != nil {
+		panic(err)
+	}
+
+	var txData2 sdk.TxMsgData
+	if err := txData2.Unmarshal(hexResp); err != nil {
+		panic(err)
+	}
+
+	var response2 strategytypes.MsgConfigStrategyResponse
+	if err := response2.Unmarshal(txData2.MsgResponses[0].Value); err != nil {
+		panic(err)
+	}
+	fmt.Println("dumpsad cron id:", response2.Id)
 }

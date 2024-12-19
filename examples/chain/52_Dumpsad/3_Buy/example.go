@@ -57,7 +57,7 @@ func main() {
 	}
 
 	fmt.Println("sender address:", senderAddress.String())
-	id := "c0cf30d440ab0176dd156d0a67fe3b2953f01f0e6fdb80518d552569233da9a4"
+	id := "1b889fb80c92ac26f9ecf1711dbe34aa33dcaa06dd1bdf06b1b78f07daf0db0c"
 	poolAddress := "lux1z5mjdzgkqlpqs7rr97tk4xe83ds3wtvnw4advq"
 	fmt.Println("pool id:", hex.EncodeToString(sdk.MustAccAddressFromBech32(poolAddress)))
 	msgTriggerStategy := &strategytypes.MsgTriggerStrategies{
@@ -65,7 +65,7 @@ func main() {
 		Ids:    []string{id},
 		Inputs: [][]byte{
 			[]byte(
-				`{"buy":{"denom":"astromesh/lux1jcltmuhplrdcwp7stlr4hlhlhgd4htqhu86cqx/CHILLGUY","amount":"2000000000","slippage":"2000"}}`,
+				`{"buy":{"denom":"astromesh/lux1jcltmuhplrdcwp7stlr4hlhlhgd4htqhu86cqx/CHILLGUYC","amount":"2000000000","slippage":"2000"}}`,
 			),
 		},
 		Queries: []*astromeshtypes.FISQueryRequest{
