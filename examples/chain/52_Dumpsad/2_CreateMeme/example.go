@@ -81,15 +81,15 @@ func main() {
 		fmt.Println("sender is already linked to svm address:", svmPubkey.String())
 	}
 
-	id := "1b889fb80c92ac26f9ecf1711dbe34aa33dcaa06dd1bdf06b1b78f07daf0db0c"
-	cronId := "939aa3a402748faa5de705a8539cc2fe1c7ffc61fa784e692647b0d6a533e974"
+	id := "8a4bd4d7722ebebbf3e3b846574e98d4085ddbcdba95b0f97c1ad917e9ea146d"
+	cronId := "516958d1e374c04f431bf5521cad9115670952949b453210c263b406b18bb42d"
 	msgTriggerStategy := &strategytypes.MsgTriggerStrategies{
 		Sender: senderAddress.String(),
 		Ids:    []string{id},
 		Inputs: [][]byte{
 			[]byte(
 				fmt.Sprintf(
-					`{"create_token":{"name":"chill guy","symbol":"CHILLGUYC","description":"just a chill guy","uri":"https://example.com/token-uri","target_vm":"WASM","solver_id":"%s","cron_id":"%s"}}`,
+					`{"create_token":{"name":"chill guy","symbol":"CHILLGUYC","description":"just a chill guy","uri":"https://example.com/token-uri","target_vm":"SVM","solver_id":"%s","cron_id":"%s"}}`,
 					id, cronId,
 				),
 			),

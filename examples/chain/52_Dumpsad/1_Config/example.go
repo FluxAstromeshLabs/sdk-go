@@ -21,8 +21,11 @@ import (
 )
 
 var (
+	//go:embed dumpsad_solver.wasm
 	intentSolverBinary []byte
-	cronBinary         []byte
+
+	//go:embed dumpsad_cron.wasm
+	cronBinary []byte
 )
 
 func main() {
@@ -65,11 +68,8 @@ func main() {
 		common.OptionGasPrices("500000000lux"),
 	)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
-
-	intentSolverBinary, _ := os.ReadFile("/Users/phucta/flux/nexus-bots/examples/solver/dumpsad-solver/target/wasm32-unknown-unknown/release/dumpsad_solver.wasm")
-	cronBinary, _ := os.ReadFile("/Users/phucta/flux/nexus-bots/examples/cron/dumpsad-cron/target/wasm32-unknown-unknown/release/dumpsad_cron.wasm")
 
 	msg := &strategytypes.MsgConfigStrategy{
 		Sender:   senderAddress.String(),
@@ -113,6 +113,7 @@ func main() {
 		panic(err)
 	}
 	solverId := response.Id
+	fmt.Println("dumpsad solver id:", solverId)
 
 	// config cron
 	msg = &strategytypes.MsgConfigStrategy{

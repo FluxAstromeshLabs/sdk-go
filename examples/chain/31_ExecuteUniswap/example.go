@@ -61,7 +61,7 @@ func signedBigIntFromBytes(b []byte) *big.Int {
 }
 
 func main() {
-	network := common.LoadNetwork("local", "")
+	network := common.LoadNetwork("devnet", "")
 	kr, err := keyring.New(
 		"fluxd",
 		"file",
@@ -123,6 +123,10 @@ func main() {
 		panic(err)
 	}
 
+	for k, v := range poolManagerABI.Errors {
+		fmt.Println("err:", k, "v:", v.ID.String(), v.Name, "sig:", v.Sig)
+	}
+
 	var compData map[string]interface{}
 	bz, err = os.ReadFile(dir + "/examples/chain/30_DeployUniswap/PoolActions.json")
 	if err != nil {
@@ -162,6 +166,12 @@ func main() {
 		panic(err)
 	}
 
+	fmt.Println("---")
+	for k, v := range erc20ABI.Errors {
+		fmt.Println("err:", k, "v:", v.ID.String(), v.Name, "sig:", v.Sig)
+	}
+
+	return
 	// tick spacing: 2^0 - 2^15
 	tokens := []string{"btc", "eth", "sol", "usdt"}
 	tokenContracts := map[string]string{}
