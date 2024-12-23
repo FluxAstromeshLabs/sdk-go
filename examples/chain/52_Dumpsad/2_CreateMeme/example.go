@@ -55,11 +55,6 @@ func main() {
 		common.OptionGasPrices("500000000lux"),
 	)
 	if err != nil {
-		fmt.Println(err)
-	}
-
-	// prepare tx msg
-	if err != nil {
 		panic(err)
 	}
 
