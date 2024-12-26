@@ -84,7 +84,61 @@ func main() {
 			Website:     "https://www.astromesh.xyz",
 			Type:        strategytypes.StrategyType_INTENT_SOLVER,
 			Tags:        strings.Split("Solver, Bank, Utility", ", "),
-			Schema:      `{}`,
+			Schema: `{
+  			"customUiUrl": "https://www.astromesh.xyz/mini-apps/?appName=dumpsad",
+			"groups": [
+				{
+				"name": "",
+				"prompts": {
+					"create_token": {
+					"template": "create meme ${name:string} with ${description:string} and ${target_vm:string} ${uri:string} ",
+					"msg_fields": [
+						"name",
+						"target_vm",
+						"description",
+						"uri",
+						"solver_id",
+						"symbol",
+						"cron_id"
+					],
+					"query": {
+						"instructions": [
+						{
+							"plane": "COSMOS",
+							"action": "COSMOS_QUERY",
+							"address": "",
+							"input": [
+							"L2Nvc21vcy9hdXRoL3YxYmV0YTEvYWNjb3VudHMvJHt3YWxsZXR9"
+							]
+						}
+						]
+					}
+					},
+					"trade": {
+					"template": "[Buy|Sell] ${denom:string} with ${amount:number} slippage ${slippage:number}",
+					"msg_fields": [
+						"denom",
+						"amount",
+						"slippage",
+						"action"
+					],
+					"query": {
+						"instructions": [
+						{
+							"plane": "COSMOS",
+							"action": "COSMOS_QUERY",
+							"address": "",
+							"input": [
+							"L2ZsdXgvaW50ZXJwb29sL3YxYmV0YTEvcG9vbHMvJHtwb29sX2lkfQ=="
+							]
+						}
+						]
+					}
+					}
+				}
+				}
+			]
+		}`,
 		},
 	}
 
