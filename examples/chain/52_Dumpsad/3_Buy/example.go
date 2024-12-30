@@ -39,7 +39,7 @@ func main() {
 	// init client ctx
 	clientCtx, senderAddress, err := chaintypes.NewClientContext(
 		network.ChainId,
-		"user2",
+		"user1",
 		kr,
 	)
 	if err != nil {
@@ -57,14 +57,14 @@ func main() {
 	}
 
 	fmt.Println("sender address:", senderAddress.String())
-	id := "8a4bd4d7722ebebbf3e3b846574e98d4085ddbcdba95b0f97c1ad917e9ea146d"
+	id := "525b57465f65287e19f8ee8128f202d9ff2200ef07d150fe0195402a0a7a400c"
 	poolAddress := "lux1z5mjdzgkqlpqs7rr97tk4xe83ds3wtvnw4advq"
 	msgTriggerStategy := &strategytypes.MsgTriggerStrategies{
 		Sender: senderAddress.String(),
 		Ids:    []string{id},
 		Inputs: [][]byte{
 			[]byte(
-				`{"trade":{"action":"buy","denom":"astromesh/lux1jcltmuhplrdcwp7stlr4hlhlhgd4htqhu86cqx/CHILLGUYC","amount":"2000000000","slippage":"2000"}}`,
+				`{"trade":{"action":"buy","denom":"astromesh/lux1jcltmuhplrdcwp7stlr4hlhlhgd4htqhu86cqx/CHILLGUYC","amount":"100000000000","slippage":"10000"}}`,
 			),
 		},
 		Queries: []*astromeshtypes.FISQueryRequest{

@@ -78,14 +78,15 @@ func main() {
 		Strategy: intentSolverBinary,
 		Query:    &types.FISQueryRequest{},
 		Metadata: &strategytypes.StrategyMetadata{
-			Name:        "Dumpsad meme",
-			Description: "Hehe dump dump dump",
-			Logo:        "https://img.icons8.com/?size=100&id=Wnx66N0cnKa7&format=png&color=000000",
+			Name:        "DumpRage",
+			Description: "The MultiVM Pumpfun mini app that allows you to select the most popular AMMs from EVM, SVM and WasmVM to launch pools for graduated tokens. More VMs, more fun.",
+			Logo:        "https://pbs.twimg.com/profile_images/1817151639767117824/v9gjwjdw_400x400.jpg",
 			Website:     "https://www.astromesh.xyz",
 			Type:        strategytypes.StrategyType_INTENT_SOLVER,
-			Tags:        strings.Split("Solver, Bank, Utility", ", "),
+			Tags:        strings.Split("Meme, Uniswap, Raydium, Astroport", ", "),
 			Schema: `{
   			"customUiUrl": "https://www.astromesh.xyz/mini-apps/?appName=dumpsad",
+			"data":{"cron_id":"a8e58642abd95fdeb8c00a363949994f4d8e361f0b6c4ccbc09780e253fc4eb7"},
 			"groups": [
 				{
 				"name": "",
