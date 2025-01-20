@@ -76,8 +76,8 @@ func main() {
 		fmt.Println("sender is already linked to svm address:", svmPubkey.String())
 	}
 
-	id := "8a4bd4d7722ebebbf3e3b846574e98d4085ddbcdba95b0f97c1ad917e9ea146d"
-	cronId := "516958d1e374c04f431bf5521cad9115670952949b453210c263b406b18bb42d"
+	id := "525b57465f65287e19f8ee8128f202d9ff2200ef07d150fe0195402a0a7a400c"
+	cronId := "c70d6ffd306552cc5e1802a4e120769fe2599125febd24a8ca58bc192474b78a"
 	msgTriggerStategy := &strategytypes.MsgTriggerStrategies{
 		Sender: senderAddress.String(),
 		Ids:    []string{id},
