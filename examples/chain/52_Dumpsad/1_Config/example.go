@@ -78,13 +78,68 @@ func main() {
 		Strategy: intentSolverBinary,
 		Query:    &types.FISQueryRequest{},
 		Metadata: &strategytypes.StrategyMetadata{
-			Name:        "Dumpsad meme",
-			Description: "Hehe dump dump dump",
-			Logo:        "https://img.icons8.com/?size=100&id=Wnx66N0cnKa7&format=png&color=000000",
+			Name:        "DumpRage",
+			Description: "The MultiVM Pumpfun mini app that allows you to select the most popular AMMs from EVM, SVM and WasmVM to launch pools for graduated tokens. More VMs, more fun.",
+			Logo:        "https://pbs.twimg.com/profile_images/1817151639767117824/v9gjwjdw_400x400.jpg",
 			Website:     "https://www.astromesh.xyz",
 			Type:        strategytypes.StrategyType_INTENT_SOLVER,
-			Tags:        strings.Split("Solver, Bank, Utility", ", "),
-			Schema:      `{}`,
+			Tags:        strings.Split("Meme, Uniswap, Raydium, Astroport", ", "),
+			Schema: `{
+  			"customUiUrl": "https://www.astromesh.xyz/mini-apps/?appName=dumpsad",
+			"data":{"cron_id":"a8e58642abd95fdeb8c00a363949994f4d8e361f0b6c4ccbc09780e253fc4eb7"},
+			"groups": [
+				{
+				"name": "",
+				"prompts": {
+					"create_token": {
+					"template": "create meme ${name:string} with ${description:string} and ${target_vm:string} ${uri:string} ",
+					"msg_fields": [
+						"name",
+						"target_vm",
+						"description",
+						"uri",
+						"solver_id",
+						"symbol",
+						"cron_id"
+					],
+					"query": {
+						"instructions": [
+						{
+							"plane": "COSMOS",
+							"action": "COSMOS_QUERY",
+							"address": "",
+							"input": [
+							"L2Nvc21vcy9hdXRoL3YxYmV0YTEvYWNjb3VudHMvJHt3YWxsZXR9"
+							]
+						}
+						]
+					}
+					},
+					"trade": {
+					"template": "[Buy|Sell] ${denom:string} with ${amount:number} slippage ${slippage:number}",
+					"msg_fields": [
+						"denom",
+						"amount",
+						"slippage",
+						"action"
+					],
+					"query": {
+						"instructions": [
+						{
+							"plane": "COSMOS",
+							"action": "COSMOS_QUERY",
+							"address": "",
+							"input": [
+							"L2ZsdXgvaW50ZXJwb29sL3YxYmV0YTEvcG9vbHMvJHtwb29sX2lkfQ=="
+							]
+						}
+						]
+					}
+					}
+				}
+				}
+			]
+		}`,
 		},
 	}
 
